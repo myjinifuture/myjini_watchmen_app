@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "311291483224",
+    "firebase_url": "https://smart-society-377fb.firebaseio.com",
+    "project_id": "smart-society-377fb",
+    "storage_bucket": "smart-society-377fb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311291483224:android:b467248d3b1e0374d3e62d",
+        "android_client_info": {
+          "package_name": "com.itfuturz.mygenie_staff"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "311291483224-91i1d82ds1jq0jqeiekvv1kpkcl0r6oe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpUJGtWuh3GAtMwLfyBsyEyVP_sLogNfY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "311291483224-91i1d82ds1jq0jqeiekvv1kpkcl0r6oe.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "311291483224-m3c0l2t4ftd0mnotcntcjrmdke61pv40.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.itfuturz.smartsocietystaff"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

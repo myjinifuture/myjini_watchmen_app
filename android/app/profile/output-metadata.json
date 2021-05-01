@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.itfuturz.mygenie_staff",
+  "variantName": "processProfileResources",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "versionCode": 12,
+      "versionName": "1.0.11",
+      "outputFile": "app-profile.apk"
+    }
+  ]
+}
