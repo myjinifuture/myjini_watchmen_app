@@ -201,113 +201,6 @@ class _SOSpageState extends State<SOSpage> {
 
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // var body;
-        // if(selFamMem && selFlats && !selWatchmen){
-        //   body = {
-        //     "senderId" : memberId,
-        //     "receiverMemberIds" : flat + family,
-        //     "receiverWatchmanIds" : flat + family,
-        //     "message" : emergencyText.text,
-        //     "societyId": SocietyId,
-        //     "sendBy" : 1
-        //   };
-        //   print("body when only watchmen is not selected");
-        //   print(body);
-        // }
-        // else  if(!selFamMem && !selFlats && selWatchmen){
-        //   body = {
-        //     // "senderId" : memberId,
-        //     // "receiverIds" : recieverIds,
-        //     // "message" : "SOS notification",
-        //     // "isForMember" : false,
-        //     // "deviceType": Platform.isAndroid ? "Android" : "IOS"
-        //     "senderId" : memberId,
-        //     "receiverMemberIds" : watchmen,
-        //     "receiverWatchmanIds" : watchmen,
-        //     "message" : emergencyText.text,
-        //     "societyId": SocietyId,
-        //     "sendBy" : 0
-        //   };
-        //   print("body when only watchmen is selected");
-        //   print(body);
-        // }
-        // else  if(selFamMem && !selFlats && !selWatchmen){
-        //   body = {
-        //     // "senderId" : memberId,
-        //     // "receiverIds" : recieverIds,
-        //     // "message" : "SOS notification",
-        //     // "isForMember" : false,
-        //     // "deviceType": Platform.isAndroid ? "Android" : "IOS"
-        //     "senderId" : memberId,
-        //     "receiverMemberIds" : family,
-        //     "receiverWatchmanIds" : family,
-        //     "message" : emergencyText.text,
-        //     "societyId": SocietyId,
-        //     "sendBy" : 0
-        //   };
-        //   print("body when only family is selected");
-        //   print(body);
-        // }
-        // else  if(!selFamMem && selFlats && !selWatchmen && flat.length > 0){
-        //   body = {
-        //     // "senderId" : memberId,
-        //     // "receiverIds" : recieverIds,
-        //     // "message" : "SOS notification",
-        //     // "isForMember" : false,
-        //     // "deviceType": Platform.isAndroid ? "Android" : "IOS"
-        //     "senderId" : memberId,
-        //     "receiverMemberIds" : flat,
-        //     "receiverWatchmanIds" : flat,
-        //     "message" : emergencyText.text,
-        //     "societyId": SocietyId,
-        //     "sendBy" : 0
-        //   };
-        //   print("body when only flat is selected");
-        //   print(body);
-        // }
-        // else if(!selFamMem && selFlats && selWatchmen && flat.length > 0){
-        //   body = {
-        //     // "senderId" : memberId,
-        //     // "receiverIds" : recieverIds,
-        //     // "message" : "SOS notification",
-        //     // "isForMember" : false,
-        //     // "deviceType": Platform.isAndroid ? "Android" : "IOS"
-        //     "senderId" : memberId,
-        //     "receiverMemberIds" : flat,
-        //     "receiverWatchmanIds" : watchmen,
-        //     "message" : emergencyText.text,
-        //     "societyId": SocietyId,
-        //     "sendBy" : 0
-        //   };
-        //   print("body when only watchmen and flat is  selected");
-        //   print(body);
-        // }
-        // else if(selFamMem && !selFlats && selWatchmen){
-        //   body = {
-        //     // "senderId" : memberId,
-        //     // "receiverIds" : recieverIds,
-        //     // "message" : "SOS notification",
-        //     // "isForMember" : false,
-        //     // "deviceType": Platform.isAndroid ? "Android" : "IOS"
-        //     "senderId" : memberId,
-        //     "receiverMemberIds" : family,
-        //     "receiverWatchmanIds" : watchmen,
-        //     "message" : emergencyText.text,
-        //     "societyId": SocietyId,
-        //     "sendBy" : 0
-        //   };
-        //   print("body when only watchmen and family is selected");
-        //   print(body);
-        // }
-        // else{
-        //   // pr.hide();
-        //   Fluttertoast.showToast(
-        //     msg: "No Member Found in that Flat",
-        //     backgroundColor: Colors.red,
-        //     gravity: ToastGravity.BOTTOM,
-        //     textColor: Colors.white,
-        //   );
-        // }
         var body = {
           "senderId" : memberId,
           "receiverMemberIds" : flat.toSet().toList(),
@@ -677,37 +570,16 @@ class _SOSpageState extends State<SOSpage> {
                   onPressed: () {
                     allFlatMembersId.toSet().toList();
                     allFamilyIds.toSet().toList();
-                    // for(int i=0;i<allWatchmenIds.length;i++){
-                    //   IdsSentToBakend.add({
-                    //     "watchmenIds" : allWatchmenIds[i]
-                    //   });
-                    // }
-                    // for(int i=0;i<allFlatMembersId.length;i++){
-                    //   IdsSentToBakend.add({
-                    //     "flatMemberIds" : allFlatMembersId[i]
-                    //   });
-                    // }
-                    // for(int i=0;i<allFamilyIds.length;i++){
-                    //   IdsSentToBakend.add({
-                    //     "familyMemberIds" : allFamilyIds[i]
-                    //   });
-                    // }
                     print("allFlatMembersId");
-                    print(allFlatMembersId.remove(null));
+                    print(allFlatMembersId);
                     if(!selFlats){
                       Fluttertoast.showToast(
                           msg: "Please select at least One Field",
                           backgroundColor: Colors.red,
                           gravity: ToastGravity.TOP,
-                          textColor: Colors.white);
+                          textColor: Colors.white,
+                      );
                     }
-                    // else if(selFlats && allFlatMembersId.length==0 ){
-                    //   Fluttertoast.showToast(
-                    //       msg: "No Members Found in that flat",
-                    //       backgroundColor: Colors.red,
-                    //       gravity: ToastGravity.TOP,
-                    //       textColor: Colors.white);
-                    // }
                     else{
                       sendSos(allWatchmenIds,allFlatMembersId,allFamilyIds);
                     }

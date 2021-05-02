@@ -31,7 +31,7 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pop(context);
+        Navigator.pushReplacementNamed(context, "/WatchmanDashboard");
       },
       child: Container(
         color: Colors.black54,
@@ -247,7 +247,7 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
                   color: Colors.grey[200],
                   onPressed: () {
                     // Get.back();
-                   Navigator.of(context).pop();
+                    Navigator.pushReplacementNamed(context, "/WatchmanDashboard");
                   },
                   child: Text( "OK",
                       style:

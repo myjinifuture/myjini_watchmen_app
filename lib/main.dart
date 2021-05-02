@@ -7,10 +7,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-//Component
 import 'package:smartsocietystaff/Common/Constants.dart';
-import 'package:smartsocietystaff/Common/join.dart';
-import 'package:smartsocietystaff/Component/NotificationAnswerDialog.dart';
 import 'package:smartsocietystaff/Screens/AddDocument.dart';
 import 'package:smartsocietystaff/Screens/AddEvent.dart';
 import 'package:smartsocietystaff/Screens/AddNotice.dart';
@@ -41,6 +38,8 @@ import 'package:smartsocietystaff/Screens/VisitorHistoryList.dart';
 import 'package:smartsocietystaff/Screens/WatchmanDashboard.dart';
 import 'package:vibration/vibration.dart';
 
+import 'Common/join.dart';
+import 'Component/NotificationAnswerDialog.dart';
 import 'Screens/AddAMC.dart';
 import 'Screens/AddExpense.dart';
 import 'Screens/AddIncome.dart';
@@ -106,104 +105,58 @@ class _MyAppState extends State<MyApp> {
       print("received notification.payload.additionalData");
       print(notification.payload.additionalData);
       dynamic data = notification.payload.additionalData;
-      // if (data["NotificationType"] == 'VisitorAccepted') {
-      //   Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //           builder: (context) =>
-      //               NotificationAnswerDialog(data,VisitorAccepted:"VisitorAccepted")));
-      // }
-      // else if (data["NotificationType"] == 'VisitorRejected') {
-      //   Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //           builder: (context) =>
-      //               NotificationAnswerDialog(data,VisitorAccepted:"VisitorRejected")));
-      // }
-      // else if(data["CallResponseIs"] == 'Rejected') {
-      //   Get.to(FromMemberScreen(rejected: "Rejected",));
-      //   // audioCache.play('Sound.mp3');
-      //   //for vibration
-      //   // Vibration.vibrate(
-      //   // duration: 15000,
-      //   // );
-      // }
-      // else if (data["NotificationType"] == 'VisitorAccepted') {
-      //   Get.to(NotificationAnswerDialog(data,VisitorAccepted:"VisitorAccepted"));
-      //   // audioCache.play('Sound.mp3');
-      //   //for vibration
-      //   // Vibration.vibrate(
-      //   //   duration: 15000,
-      //   // );
-      // }
-      // else if (data["NotificationType"] == 'VisitorRejected') {
-      //   Get.to(NotificationAnswerDialog(data,VisitorAccepted:"VisitorRejected"));
-      //   // audioCache.play('Sound.mp3');
-      //   //for vibration
-      //   // Vibration.vibrate(
-      //   //   duration: 15000,
-      //   // );
-      // }
-      // else if(data["NotificationType"] == 'VoiceCall') {
-      //   Get.to(JoinPage(entryIdWhileGuestEntry: data["CallingId"],voicecall : data["NotificationType"]));        // audioCache.play('Sound.mp3');
-      //   //for vibration
-      //   // Vibration.vibrate(
-      //   //   duration: 15000,
-      //   // );
-      // }
-      // else if (data["NotificationType"]== 'VideoCalling') {
-      //   Get.to(JoinPage(entryIdWhileGuestEntry:data["VisitorEntryId"],data: data,CallingId:data["CallingId"]));
-      //   // audioCache.play('Sound.mp3');
-      //   //for vibration
-      //   // Vibration.vibrate(
-      //   //   duration: 15000,
-      //   // );
-      // }
-      // else if (data["NotificationType"] == 'UnknownVisitor') {
-      //   if(data["CallStatus"] == "Accepted") {
-      //     Get.to(JoinPage(
-      //       // entryIdWhileGuestEntry: message["data"]["VisitorEntryId"],
-      //       // data: message["data"],
-      //       // CallingId:message["data"]["CallingId"],
-      //       unknownVisitorEntryId: data["EntryId"],
-      //     ),
-      //     );
-      //   }
-      //   else{
-      //     Get.to(NotificationAnswerDialog(data));
-      //   }
-      //   // audioCache.play('Sound.mp3');
-      //   //for vibration
-      //   // Vibration.vibrate(
-      //   //   duration: 15000,
-      //   // );
-      // }
-      // else if (data["NotificationType"] == 'Visitor') {
-      //   Get.to(
-      //     JoinPage(
-      //       entryIdWhileGuestEntry: data["VisitorEntryId"],
-      //       data: data,
-      //       CallingId:data["CallingId"],
-      //     ),
-      //   );
-      //   // audioCache.play('Sound.mp3');
-      //   //for vibration
-      //   // Vibration.vibrate(
-      //   //   duration: 15000,
-      //   // );
-      // }
-      // else if (data["Type"] == 'Accepted') {
-      //   Get.to(JoinPage());
-      //   // audioCache.play('Sound.mp3');
-      //   //for vibration
-      //   // Vibration.vibrate(
-      //   //   duration: 15000,
-      //   // );
-      // }
-      //
-      // else {
-      //   Get.to(NotificationAnswerDialog(data));
-      // }
+      Vibration.vibrate(
+        duration: 1500,
+      );
+      if (data["NotificationType"] == 'VisitorAccepted') {
+        Get.to(NotificationAnswerDialog(data,VisitorAccepted:"VisitorAccepted"));
+      }
+      else if (data["NotificationType"] == 'VisitorRejected') {
+        Get.to(NotificationAnswerDialog(data,VisitorAccepted:"VisitorRejected"));
+
+      }
+      else if(data["CallResponseIs"] == 'Rejected') {
+        Get.to(FromMemberScreen(rejected: "Rejected",));
+      }
+      else if (data["NotificationType"] == 'VisitorAccepted') {
+        Get.to(NotificationAnswerDialog(data,VisitorAccepted:"VisitorAccepted"));
+      }
+      else if (data["NotificationType"] == 'VisitorRejected') {
+        Get.to(NotificationAnswerDialog(data,VisitorAccepted:"VisitorRejected"));
+      }
+      else if(data["NotificationType"] == 'VoiceCall') {
+        Get.to(JoinPage(entryIdWhileGuestEntry: data["CallingId"],voicecall : data["NotificationType"]));        // audioCache.play('Sound.mp3');
+      }
+      else if (data["NotificationType"]== 'VideoCalling') {
+        Get.to(JoinPage(entryIdWhileGuestEntry:data["VisitorEntryId"],data: data,CallingId:data["CallingId"]));
+      }
+      else if (data["NotificationType"] == 'UnknownVisitor') {
+        if(data["CallStatus"] == "Accepted") {
+          Get.to(JoinPage(
+            unknownVisitorEntryId: data["EntryId"],
+          ),
+          );
+        }
+        else{
+          Get.to(NotificationAnswerDialog(data));
+        }
+
+      }
+      else if (data["NotificationType"] == 'Visitor') {
+        Get.to(
+          JoinPage(
+            entryIdWhileGuestEntry: data["VisitorEntryId"],
+            data: data,
+            CallingId:data["CallingId"],
+          ),
+        );
+      }
+      else if (data["Type"] == 'Accepted') {
+        Get.to(JoinPage());
+      }
+      else {
+        Get.to(NotificationAnswerDialog(data));
+      }
     });
 
     OneSignal.shared.setPermissionObserver((OSPermissionStateChanges changes) {

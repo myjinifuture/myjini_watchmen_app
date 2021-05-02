@@ -1,5 +1,3 @@
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:smartsocietystaff/Common/Constants.dart';
 import 'package:vibration/vibration.dart';
@@ -17,8 +15,7 @@ class FromMemberScreen extends StatefulWidget {
 
 class _FromMemberScreenState extends State<FromMemberScreen> {
 
-  AudioCache audioCache;
-  AudioPlayer audioPlayer;
+
   Duration _duration = new Duration();
   Duration _position = new Duration();
   Duration _slider = new Duration(seconds: 0);
@@ -30,25 +27,13 @@ class _FromMemberScreenState extends State<FromMemberScreen> {
     print("widget.memberdata");
     print(widget.fromMemberData);
     super.initState();
-    Vibration.cancel();
-    audioPlayer = new AudioPlayer();
-    audioCache = new AudioCache(fixedPlayer: audioPlayer);
   }
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    audioPlayer.pause();
-    print("widget.rejected");
-    print(widget.rejected);
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        audioPlayer.stop();
         Navigator.pushReplacementNamed(context, "/WatchmanDashboard");
       },
       child: Scaffold(

@@ -252,7 +252,7 @@ class _JoinPageState extends State<JoinPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.of(context).pop();
+        Navigator.pushReplacementNamed(context, "/WatchmanDashboard");
       },
       child: Scaffold(
         appBar: AppBar(
