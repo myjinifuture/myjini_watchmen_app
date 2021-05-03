@@ -63,7 +63,7 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
       print(result.notification.payload.additionalData);
       dynamic data = result.notification.payload.additionalData;
       Vibration.vibrate(
-        duration: 15000,
+        duration: 700,
       );
       if (data["NotificationType"] == 'VisitorAccepted') {
         Get.to(NotificationAnswerDialog(data,VisitorAccepted:"VisitorAccepted"));
@@ -87,7 +87,7 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
       else if (data["NotificationType"]== 'VideoCalling') {
         Get.to(JoinPage(entryIdWhileGuestEntry:data["VisitorEntryId"],data: data,CallingId:data["CallingId"]));
       }
-      else if (data["NotificationType"] == 'UnknownVisitor') {
+      else if (data["notificationType"] == 'UnknownVisitor') {
         if(data["CallStatus"] == "Accepted") {
           Get.to(JoinPage(
             unknownVisitorEntryId: data["EntryId"],

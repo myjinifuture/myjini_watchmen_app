@@ -105,9 +105,6 @@ class _MyAppState extends State<MyApp> {
       print("received notification.payload.additionalData");
       print(notification.payload.additionalData);
       dynamic data = notification.payload.additionalData;
-      Vibration.vibrate(
-        duration: 1500,
-      );
       if (data["NotificationType"] == 'VisitorAccepted') {
         Get.to(NotificationAnswerDialog(data,VisitorAccepted:"VisitorAccepted"));
       }
@@ -130,7 +127,7 @@ class _MyAppState extends State<MyApp> {
       else if (data["NotificationType"]== 'VideoCalling') {
         Get.to(JoinPage(entryIdWhileGuestEntry:data["VisitorEntryId"],data: data,CallingId:data["CallingId"]));
       }
-      else if (data["NotificationType"] == 'UnknownVisitor') {
+      else if (data["notificationType"] == 'UnknownVisitor') {
         if(data["CallStatus"] == "Accepted") {
           Get.to(JoinPage(
             unknownVisitorEntryId: data["EntryId"],

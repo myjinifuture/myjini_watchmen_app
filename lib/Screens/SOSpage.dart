@@ -363,6 +363,7 @@ class _SOSpageState extends State<SOSpage> {
                   return GestureDetector(
                     onTap: () {
                       setState(() {
+                        emergencyText.text = titles[index].toString();
                         isSelected = index;
                       });
                     },
@@ -574,10 +575,10 @@ class _SOSpageState extends State<SOSpage> {
                     print(allFlatMembersId);
                     if(!selFlats){
                       Fluttertoast.showToast(
-                          msg: "Please select at least One Field",
-                          backgroundColor: Colors.red,
-                          gravity: ToastGravity.TOP,
-                          textColor: Colors.white,
+                        msg: "Please select at least One Field",
+                        backgroundColor: Colors.red,
+                        gravity: ToastGravity.TOP,
+                        textColor: Colors.white,
                       );
                     }
                     else{
@@ -641,18 +642,18 @@ class _PopUpState extends State<PopUp> {
 
   @override
   void initState() {
-    if(widget.selectedEmergency == "Fire"){
-      emergencyText.text = "Fire Emergency";
-    }
-    else if(widget.selectedEmergency == "Accident"){
-      emergencyText.text = "Accident Emergency";
-    }
-    else if(widget.selectedEmergency == "Criminal"){
-      emergencyText.text = "Crime Emergency";
-    }
-    else if(widget.selectedEmergency == "Kids Alert"){
-      emergencyText.text = "Kids Emergency";
-    }
+    // if(widget.selectedEmergency == "Fire"){
+    //   emergencyText.text = "Fire Emergency";
+    // }
+    // else if(widget.selectedEmergency == "Accident"){
+    //   emergencyText.text = "Accident Emergency";
+    // }
+    // else if(widget.selectedEmergency == "Criminal"){
+    //   emergencyText.text = "Crime Emergency";
+    // }
+    // else if(widget.selectedEmergency == "Kids Alert"){
+    //   emergencyText.text = "Kids Emergency";
+    // }
 
     _getLocaldata();
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
@@ -925,7 +926,7 @@ class _PopUpState extends State<PopUp> {
         //     textColor: Colors.white,
         //   );
         // }
-       var body = {
+        var body = {
           "senderId" : memberId,
           "receiverMemberIds" : flat ,
           "receiverWatchmanIds" : flat + family,
