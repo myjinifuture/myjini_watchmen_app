@@ -5,6 +5,7 @@ import 'package:agora_rtm/agora_rtm.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smartsocietystaff/Common/settings.dart';
+import 'package:smartsocietystaff/Screens/AddVisitorForm.dart';
 
 // import 'package:wakelock/wakelock.dart';
 
@@ -13,11 +14,14 @@ class JoinPage extends StatefulWidget {
   String entryIdWhileGuestEntry;
   Map data;
   String CallingId;
-  String unknownVisitorEntryId="";
+  String unknownVisitorEntryId = "";
 
-  JoinPage({
-    this.voicecall,this.entryIdWhileGuestEntry,this.data,this.CallingId,this.unknownVisitorEntryId
-  });
+  JoinPage(
+      {this.voicecall,
+      this.entryIdWhileGuestEntry,
+      this.data,
+      this.CallingId,
+      this.unknownVisitorEntryId});
 
   @override
   _JoinPageState createState() => _JoinPageState();
@@ -65,22 +69,23 @@ class _JoinPageState extends State<JoinPage> {
     String send;
     print("widget.entryIdWhileGuestEntry");
     print(widget.entryIdWhileGuestEntry);
-    if(widget.unknownVisitorEntryId!=null){
+    if (widget.unknownVisitorEntryId != null) {
       send = widget.unknownVisitorEntryId;
-    }
-    else if(widget.entryIdWhileGuestEntry == null){
+    } else if (widget.entryIdWhileGuestEntry == null) {
       send = widget.data["CallingId"];
-    }
-    else{
+    } else {
       send = widget.entryIdWhileGuestEntry;
     }
-     print("send on join page");
+    print("send on join page");
     print(send);
     await AgoraRtcEngine.enableWebSdkInteroperability(true);
     await AgoraRtcEngine.setParameters(
         '''{\"che.video.lowBitRateStreamParameter\":{\"width\":320,\"height\":180,\"frameRate\":15,\"bitRate\":140}}''');
     await AgoraRtcEngine.joinChannel(
-      null, send, null, 0,
+      null,
+      send,
+      null,
+      0,
     );
     setState(() {
       loading = false;
@@ -89,7 +94,9 @@ class _JoinPageState extends State<JoinPage> {
 
   Future<void> _initAgoraRtcEngine() async {
     await AgoraRtcEngine.create(APP_ID);
-    widget.voicecall == "VoiceCall" ? await AgoraRtcEngine.disableVideo() : await AgoraRtcEngine.enableVideo();
+    widget.voicecall == "VoiceCall"
+        ? await AgoraRtcEngine.disableVideo()
+        : await AgoraRtcEngine.enableVideo();
     //await AgoraRtcEngine.muteLocalAudioStream(true);
   }
 
@@ -186,46 +193,85 @@ class _JoinPageState extends State<JoinPage> {
   Widget _toolbar() {
     return Container(
       alignment: Alignment.bottomCenter,
-      padding: const EdgeInsets.symmetric(vertical: 48),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          RawMaterialButton(
-            onPressed: _onToggleMute,
-            child: Icon(
-              muted ? Icons.mic_off : Icons.mic,
-              color: muted ? Colors.white : Colors.blueAccent,
-              size: 20.0,
-            ),
-            shape: CircleBorder(),
-            elevation: 2.0,
-            fillColor: muted ? Colors.blueAccent : Colors.white,
-            padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              RawMaterialButton(
+                onPressed: _onToggleMute,
+                child: Icon(
+                  muted ? Icons.mic_off : Icons.mic,
+                  color: muted ? Colors.white : Colors.blueAccent,
+                  size: 20.0,
+                ),
+                shape: CircleBorder(),
+                elevation: 2.0,
+                fillColor: muted ? Colors.blueAccent : Colors.white,
+                padding: const EdgeInsets.all(12.0),
+              ),
+              RawMaterialButton(
+                onPressed: () => _onCallEnd(context),
+                child: Icon(
+                  Icons.call_end,
+                  color: Colors.white,
+                  size: 35.0,
+                ),
+                shape: CircleBorder(),
+                elevation: 2.0,
+                fillColor: Colors.redAccent,
+                padding: const EdgeInsets.all(15.0),
+              ),
+              RawMaterialButton(
+                onPressed: _onSwitchCamera,
+                child: Icon(
+                  Icons.switch_camera,
+                  color: Colors.blueAccent,
+                  size: 20.0,
+                ),
+                shape: CircleBorder(),
+                elevation: 2.0,
+                fillColor: Colors.white,
+                padding: const EdgeInsets.all(12.0),
+              )
+            ],
           ),
-          RawMaterialButton(
-            onPressed: () => _onCallEnd(context),
-            child: Icon(
-              Icons.call_end,
-              color: Colors.white,
-              size: 35.0,
+          SizedBox(height: 5,),
+          Center(
+            child: RaisedButton(
+              color: Colors.green,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddVisitorForm(isConfirmed: true,stepFromVideoPage: 2,),
+                  ),
+                );
+              },
+              child: Row(mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Confirm',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(width: 5,),
+                  Icon(
+                    Icons.thumb_up,
+                    color: Colors.white,
+                  )
+                ],
+              ),
             ),
-            shape: CircleBorder(),
-            elevation: 2.0,
-            fillColor: Colors.redAccent,
-            padding: const EdgeInsets.all(15.0),
           ),
-          RawMaterialButton(
-            onPressed: _onSwitchCamera,
-            child: Icon(
-              Icons.switch_camera,
-              color: Colors.blueAccent,
-              size: 20.0,
-            ),
-            shape: CircleBorder(),
-            elevation: 2.0,
-            fillColor: Colors.white,
-            padding: const EdgeInsets.all(12.0),
-          )
         ],
       ),
     );

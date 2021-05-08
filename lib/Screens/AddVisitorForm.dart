@@ -20,8 +20,9 @@ import 'package:speech_recognition/speech_recognition.dart';
 
 class AddVisitorForm extends StatefulWidget {
   String visitortype;
-
-  AddVisitorForm({this.visitortype});
+bool isConfirmed;
+int stepFromVideoPage;
+  AddVisitorForm({this.visitortype,this.isConfirmed,this.stepFromVideoPage});
 
   @override
   _AddVisitorFormState createState() => _AddVisitorFormState();
@@ -72,6 +73,12 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
 
   @override
   void initState() {
+    if(widget.isConfirmed==true){
+      setState(() {
+        step=widget.stepFromVideoPage;
+        getImage();
+      });
+    }
     // TODO: implement initState
     super.initState();
     print(step.toString());
@@ -318,7 +325,8 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                 "isMask": mask == true ? "1" : "0",
                 "isSanitize": sanitized == true ? "1" : "0",
                 "Temperature": temperatureText.text.toString(),
-                 "deviceType" : Platform.isAndroid ? "Android" : "IOS"
+                 "deviceType" : Platform.isAndroid ? "Android" : "IOS",
+                 "isVerified":widget.isConfirmed,
                });
             }
             print({
@@ -343,7 +351,8 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
               "isMask": mask == true ? "1" : "0",
               "isSanitize": sanitized == true ? "1" : "0",
               "Temperature": temperatureText.text.toString(),
-              "deviceType" : Platform.isAndroid ? "Android" : "IOS"
+              "deviceType" : Platform.isAndroid ? "Android" : "IOS",
+              "isVerified":widget.isConfirmed,
             });
             Services.responseHandler(apiName: "watchman/addVisitorEntry",body: formData).then((data) async {
               // pr.hide();
