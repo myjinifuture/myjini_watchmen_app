@@ -195,6 +195,9 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
     }
   }
 
+
+
+
   updateMemberPlayerId(String watchmanId,String mobileNo,String playerId,String IMEI) async {
     try {
       final result = await InternetAddress.lookup('google.com');
@@ -258,7 +261,7 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
       print(currentVersion);
 
       if (newVersion > currentVersion) {
-        _showVersionDialog(context);
+        // _showVersionDialog(context);
       }
     } on FetchThrottledException catch (exception) {
       // Fetch throttled.

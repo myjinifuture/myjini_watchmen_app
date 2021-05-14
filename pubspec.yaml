@@ -29,9 +29,12 @@ dependencies:
   progress_dialog: ^1.2.0
   flutter_cupertino_date_picker: ^1.0.12
   file_picker: ^1.4.2
+  avatar_glow: any
+  flutter_text_to_speech: any
   cloud_firestore: any
   flutter_native_image: ^0.0.4
   xml2json: ^4.0.0
+  speech_to_text: any
   vibration: ^1.7.3
   fluttertoast: ^3.0.3
 #  url_launcher: ^5.1.1
