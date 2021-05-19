@@ -157,7 +157,7 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
                               //     fontSize: 20,
                               //   ),
                               // ),
-                              Text("Accepted By",
+                              Text("Responded By",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20,

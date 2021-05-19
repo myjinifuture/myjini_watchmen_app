@@ -571,6 +571,7 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                 _fifthDigit = null;
                 _sixthDigit = null;
               });
+
             }
             else if(data.Message.split(" ")[0] == "Guest" || data.Data.length > 0) {
               _showVisitorData(data.Data);
@@ -704,6 +705,14 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                 backgroundColor: Colors.green,
                 gravity: ToastGravity.TOP,
                 textColor: Colors.white);
+            setState(() {
+              _firstDigit = null;
+              _secondDigit = null;
+              _thirdDigit = null;
+              _fourthDigit = null;
+              _fifthDigit = null;
+              _sixthDigit = null;
+            });
           } else {
             //showMsg("Data Not Found");
           }
@@ -1013,8 +1022,8 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                                   }
                                 }
                               });
-                              Navigator.pop(context);
                               sendNotificationToParent(flatId: selectedFlatId,isVoice : false);
+                              Navigator.pop(context);
                             }
                           },
                           child: Card(
@@ -1206,41 +1215,46 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
             _text = val.recognizedWords;
             print("_text");
             print(_text);
-            bool isVisitorSpoken = false;
+            // bool isVisitorSpoken = false;
             if(_text.replaceAll(" ", "").toUpperCase().contains("VIDEOCALL") ||
             _text.replaceAll(" ", "").toUpperCase().contains("AUDIOCALL") ||
-            _text.replaceAll(" ", "").toUpperCase().contains("CALL")){
-            for(int i=0;i<memberData.length;i++){
-              if(_text.toUpperCase().replaceAll(" ","").
-            contains(memberData[i]["Name"].toString().toUpperCase().replaceAll(" ",""))){
-                speak("call kar raha hu ${memberData[i]["Name"]} ko");
-                if(_text.replaceAll(" ", "").toUpperCase().contains("AUDIOCALL")){
-            callingToMemberFromWatchmen(false, memberData[i]);
-            }
-            else{
-              callingToMemberFromWatchmen(true, memberData[i]);
-            }
-            }
-            }
-            setState(() {
-            _isListening = false;
-            });
-            }
-            else{
-              for(int i=0;i<_visitorList.length;i++){
-                if(_text.replaceAll(" ", "").toUpperCase().contains("VISITOR")) {
+            _text.replaceAll(" ", "").toUpperCase().contains("CALL")) {
+              for (int i = 0; i < memberData.length; i++) {
+                if (_text.toUpperCase().replaceAll(" ", "").
+                contains(
+                    memberData[i]["Name"].toString().toUpperCase().replaceAll(
+                        " ", ""))
+                //     || _text.toUpperCase().replaceAll(" ","").
+                // contains(memberData[i]["Name"].toString().split(" ")[1].toUpperCase().replaceAll(" ",""))
+                ) {
+                  speak("call kar raha hu ${memberData[i]["Name"]} ko");
                   if (_text.replaceAll(" ", "").toUpperCase().contains(
-                      _visitorList[i]["Name"]
-                          .toString().toUpperCase()) ||
+                      "AUDIOCALL") ||
                       _text.replaceAll(" ", "").toUpperCase().contains(
-                          _visitorList[i]["Name"]
-                              .toString().toUpperCase())) {
-
+                          "CALL")) {
+                    callingToMemberFromWatchmen(false, memberData[i]);
                   }
-                  isVisitorSpoken = true;
+                  else {
+                    callingToMemberFromWatchmen(true, memberData[i]);
+                  }
                 }
               }
-              if(!isVisitorSpoken){
+            }
+            else{
+              // for(int i=0;i<_visitorList.length;i++){
+              //   if(_text.replaceAll(" ", "").toUpperCase().contains("VISITOR")) {
+              //     if (_text.replaceAll(" ", "").toUpperCase().contains(
+              //         _visitorList[i]["Name"]
+              //             .toString().toUpperCase()) ||
+              //         _text.replaceAll(" ", "").toUpperCase().contains(
+              //             _visitorList[i]["Name"]
+              //                 .toString().toUpperCase())) {
+              //
+              //     }
+              //     isVisitorSpoken = true;
+              //   }
+              // }
+
                 _text = _text.replaceAll(" ", "");
                 if(_text.length == 4 && !_text.toString().contains(new RegExp(r'[A-Z]'))) {
                   for (int i = 0; i < wingList.length; i++) {
@@ -1284,7 +1298,6 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                   });
                   _getVisitorData(_text,WatchManId);
                 }
-              }
             }
           }),
         );
