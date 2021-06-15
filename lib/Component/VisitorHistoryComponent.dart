@@ -25,11 +25,11 @@ class _VisitorHistoryComponentState extends State<VisitorHistoryComponent> {
             Padding(
               padding: const EdgeInsets.only(top: 8.0, left: 8.0, bottom: 8.0),
               child: ClipOval(
-                child: widget._Visitorlist["Image"] != "" &&
-                        widget._Visitorlist["Image"] != null
+                child: widget._Visitorlist["guestImage"] != "" &&
+                        widget._Visitorlist["guestImage"] != null
                     ? FadeInImage.assetNetwork(
                         placeholder: 'images/user.png',
-                        image: "${IMG_URL + widget._Visitorlist["Image"]}",
+                        image: "${IMG_URL + widget._Visitorlist["guestImage"]}",
                         width: 50,
                         height: 50,
                         fit: BoxFit.fill)
@@ -54,12 +54,12 @@ class _VisitorHistoryComponentState extends State<VisitorHistoryComponent> {
                     child: Text(widget._Visitorlist["CompanyName"] != "" &&
                             widget._Visitorlist["CompanyName"] != null
                         ? '${widget._Visitorlist["CompanyName"]}'
-                        : '${widget._Visitorlist["VisitorTypeName"]}'),
+                        : '${widget._Visitorlist["ContactNo"]}'),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(
-                        "Flat No: ${widget._Visitorlist["WingId"]}- ${widget._Visitorlist["FlatId"]}"),
+                        "Flat No: ${widget._Visitorlist["WingData"][0]["wingName"]}- ${widget._Visitorlist["FlatData"][0]["flatNo"]}"),
                   )
                 ],
               ),

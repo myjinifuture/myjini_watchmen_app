@@ -73,6 +73,8 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
 
   @override
   void initState() {
+    print("widget.isConfirmed");
+    print(widget.isConfirmed);
     if(widget.isConfirmed==true){
       setState(() {
         step=widget.stepFromVideoPage;
@@ -326,7 +328,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                 "isSanitize": sanitized == true ? "1" : "0",
                 "Temperature": temperatureText.text.toString(),
                  "deviceType" : Platform.isAndroid ? "Android" : "IOS",
-                 "isVerified":widget.isConfirmed,
+                 "isVerified":widget.isConfirmed == null ? false : widget.isConfirmed,
                });
             }
             print({
@@ -352,7 +354,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
               "isSanitize": sanitized == true ? "1" : "0",
               "Temperature": temperatureText.text.toString(),
               "deviceType" : Platform.isAndroid ? "Android" : "IOS",
-              "isVerified":widget.isConfirmed,
+              "isVerified":widget.isConfirmed == null ? false : widget.isConfirmed,
             });
             Services.responseHandler(apiName: "watchman/addVisitorEntry",body: formData).then((data) async {
               // pr.hide();
@@ -409,7 +411,17 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
               child: new Text("Okay",
                   style: TextStyle(fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.pop(context);
+                // Navigator.pushReplacementNamed(context, '/WatchmanDashboard');
+                if(widget.isConfirmed == null){
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                }
+                else {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                }
                 // Navigator.push(
                 //   context,
                 //   MaterialPageRoute(
@@ -514,61 +526,61 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
             ),
           ),
         ),
-        _selectedVisitorType != "Guest"
-            ? Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Text(
-                  "Company Name",
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                ),
-              )
-            : Container(),
-        _selectedVisitorType != "Guest"
-            ? InkWell(
-                onTap: () {
-                  if (CompanyData.length > 0) {
-                    _companySelectBottomSheet(context);
-                  } else
-                    GetCompanyName();
-                },
-                child: Card(
-                  elevation: 2,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: 60,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Image.network(
-                                '$IMG_URL' + '$_selectedCompanyLogo')),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              _selectedCompanyName == null
-                                  ? 'Select Company Name'
-                                  : '$_selectedCompanyName',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                        Icon(Icons.chevron_right)
-                      ],
-                    ),
-                  ),
-                ),
-              )
-            : Container(),
-        Padding(
-          padding: const EdgeInsets.all(6.0),
-          child: Text(
-            "Photo & Name",
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-          ),
-        ),
+       //  Padding(
+       //          padding: const EdgeInsets.all(6.0),
+       //          child: Text(
+       //            "Company Name",
+       //            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+       //          ),
+       //        ),
+       // InkWell(
+       //          onTap: () {
+       //            // if (_selectedVisitorType == "Guest") {
+       //            //   _companySelectBottomSheet(context);
+       //            // } else if(_selectedVisitorType == "Cab Driver") {
+       //            //   GetCompanyName(0);
+       //            // }
+       //            // else{
+       //            //   GetCompanyName(1);
+       //            // }
+       //          },
+       //          child: Card(
+       //            elevation: 2,
+       //            child: Container(
+       //              width: MediaQuery.of(context).size.width,
+       //              height: 60,
+       //              child: Row(
+       //                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+       //                crossAxisAlignment: CrossAxisAlignment.center,
+       //                children: <Widget>[
+       //                  Padding(
+       //                      padding: const EdgeInsets.all(8.0),
+       //                      child: Image.network(
+       //                          '$IMG_URL' + '$_selectedCompanyLogo')),
+       //                  // Expanded(
+       //                  //   child: Padding(
+       //                  //     padding: const EdgeInsets.all(8.0),
+       //                  //     child: Text(
+       //                  //       _selectedCompanyName == null
+       //                  //           ? 'Select Company Name'
+       //                  //           : '$_selectedCompanyName',
+       //                  //       style: TextStyle(fontWeight: FontWeight.bold),
+       //                  //     ),
+       //                  //   ),
+       //                  // ),
+       //                  Icon(Icons.chevron_right)
+       //                ],
+       //              ),
+       //            ),
+       //          ),
+       //        ),
+        // Padding(
+        //   padding: const EdgeInsets.all(6.0),
+        //   child: Text(
+        //     "Photo & Name",
+        //     style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+        //   ),
+        // ),
         InkWell(
           onTap: () {
             // _selectedVisitorIcon == null ||
@@ -578,12 +590,21 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                 ? Fluttertoast.showToast(
                     msg: "Please Select Visitor Type",
                     toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.CENTER,
+                    gravity: ToastGravity.TOP,
                     timeInSecForIos: 1,
                     backgroundColor: Colors.red,
                     textColor: Colors.white,
                     fontSize: 16.0)
-                : setState(() {
+                : _selectedVisitorType!="Guest" &&
+                            _selectedCompanyName == null ||
+                            _selectedCompanyName=="" ? Fluttertoast.showToast(
+                            msg: "Please Select Company Type",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.TOP,
+                            timeInSecForIos: 1,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
+                            fontSize: 16.0) : setState(() {
                     step = 2;
                   });
           },
@@ -613,6 +634,8 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
       ],
     );
   }
+
+  bool _isListening = false;
 
   get photoname {
     return SingleChildScrollView(
@@ -684,15 +707,21 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                       ),
                       counterText: "",
                       suffixIcon: IconButton(
-                        icon: Icon(Icons.mic),
+                        icon: Icon(_isListening ? Icons.mic : Icons.mic_none,
+                        ),
                         onPressed: () {
+                          setState(() {
+                            _isListening = true;
+                          });
                           requestPermission(PermissionGroup.microphone);
                           _speechRecognitionName
                               .listen(locale: "en_US")
-                              .then((result) => print('####-$result'));
+                              .then((result) {
+                                print('####-$result');
+                              });
                         },
                       ),
-                      labelText: "Visitor Name",
+                      labelText: "Visitor Name *",
                       hasFloatingPlaceholder: true,
                       labelStyle: TextStyle(fontSize: 13)),
                 ),
@@ -712,7 +741,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                         borderSide: new BorderSide(),
                       ),
                       counterText: "",
-                      labelText: "Contact Number",
+                      labelText: "Contact Number *",
                       hasFloatingPlaceholder: true,
                       labelStyle: TextStyle(fontSize: 13)),
                 ),
@@ -906,7 +935,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                     Padding(
                       padding: const EdgeInsets.only(left: 8.0, top: 10.0),
                       child: Text(
-                        "Select Wing",
+                        "Select Wing *",
                         style: TextStyle(
                             fontSize: 12, fontWeight: FontWeight.bold),
                       ),
@@ -930,7 +959,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                             hint: wingList != null &&
                                 wingList != "" &&
                                 wingList.length > 0
-                                ? Text("Select Wing",
+                                ? Text("Select Wing *",
                                     style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600))
@@ -970,7 +999,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                     Padding(
                       padding: const EdgeInsets.only(left: 8.0, top: 10.0),
                       child: Text(
-                        "Select Flat",
+                        "Select Flat *",
                         style: TextStyle(
                             fontSize: 12, fontWeight: FontWeight.bold),
                       ),
@@ -1099,7 +1128,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
           "wingId" : wingId
         };
         FlatData.clear();
-        Services.responseHandler(apiName: "admin/getFlatsOfSociety",body: data).then((data) async {
+        Services.responseHandler(apiName: "admin/getFlatsOfSociety_v1",body: data).then((data) async {
           if (data.Data !=null) {
             setState(() {
               // FlatData = data.Data;
@@ -1131,7 +1160,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
     }
   }
 
-  GetCompanyName() async {
+  GetCompanyName(int type) async {
     try {
       //check Internet Connection
       final result = await InternetAddress.lookup('google.com');
@@ -1139,14 +1168,17 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
         setState(() {
           // pr.show();
         });
+        var data = {
+          "type": type
+        };
 
-        Services.getCompanyName().then((data) async {
+        Services.responseHandler(apiName: 'admin/getVisitorSubcategory',body: data).then((data) async {
           setState(() {
             // pr.hide();
           });
-          if (data != null && data.length > 0) {
+          if (data != null && data.Data.length > 0) {
             setState(() {
-              CompanyData = data;
+              CompanyData = data.Data;
             });
             _companySelectBottomSheet(context);
           } else {
@@ -1263,9 +1295,11 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                                 VisitorTypeData[index]["_id"];
                                 setState(() {
                                   step = 2;
-                                });                              }
+                                });
+                              }
                               else
-                              if (VisitorTypeData.length > 0) {
+                              if (VisitorTypeData[index]["guestType"] == "Cab Driver"
+                               || VisitorTypeData[index]["guestType"] == "Delivery Boy") {
                                 setState(() {
                                   _selectedVisitorType =
                                       VisitorTypeData[index]["guestType"];
@@ -1280,6 +1314,14 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                                 Navigator.of(context).pop();
                               } else
                                 GetVisitorType();
+                              if (VisitorTypeData[index]["guestType"] == "Guest") {
+                                // _companySelectBottomSheet(context);
+                              } else if(VisitorTypeData[index]["guestType"] == "Cab Driver") {
+                                GetCompanyName(0);
+                              }
+                              else{
+                                GetCompanyName(1);
+                              }
                             },
                             child: Card(
                               child: Center(
@@ -1421,15 +1463,16 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                             if (CompanyData.length > 0) {
                               setState(() {
                                 _selectedCompanyName =
-                                    CompanyData[index]["CompanyName"];
+                                    CompanyData[index]["name"];
                                 _selectedCompanyLogo =
-                                    CompanyData[index]["Image"];
+                                    CompanyData[index]["image"];
                               });
                               print(_selectedCompanyLogo);
                               Navigator.pop(context);
-                            } else {
-                              GetCompanyName();
                             }
+                            setState(() {
+                              step = 2;
+                            });
                           },
                           child: Card(
                             child: Center(
@@ -1438,10 +1481,10 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                                 children: <Widget>[
                                   Padding(
                                     padding: const EdgeInsets.all(4.0),
-                                    child: CompanyData[index]["Image"] != null
+                                    child: CompanyData[index]["image"] != null
                                         ? Image.network(
                                             '${IMG_URL}' +
-                                                '${CompanyData[index]["Image"]}',
+                                                '${CompanyData[index]["image"]}',
                                             height: 60,
                                             width: 60,
                                           )
@@ -1450,7 +1493,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                                   Padding(
                                     padding: const EdgeInsets.all(4.0),
                                     child: Text(
-                                      '${CompanyData[index]["CompanyName"]}',
+                                      '${CompanyData[index]["name"]}',
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 12),

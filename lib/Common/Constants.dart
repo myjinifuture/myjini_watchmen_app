@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 // const String IMG_URL = "http://smartsociety.itfuturz.com";
 
 const String API_URL = "http://mywatcher.itfuturz.com/api/AppAPI/";
-const String IMG_URL = "http://13.127.1.141/";
+ String IMG_URL = "";
  String NODE_API = "";
 const Inr_Rupee = "₹";
 const String Access_Token = "Mjdjhcbj43jkmsijkmjJKJKJoijlkmlkjo-HfdkvjDJjMoikjnNJn-JNFhukmk";

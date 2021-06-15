@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
@@ -46,6 +47,7 @@ class _SOSpageState extends State<SOSpage> {
 
   @override
   void initState() {
+    _getLocation();
     // getFlatIds();
     _getLocaldata();
   }
@@ -57,10 +59,16 @@ class _SOSpageState extends State<SOSpage> {
   List flatsToMakeSort = [],selectedFlatIds = [];
   _getLocaldata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    print("1");
     SocietyId = prefs.getString(cnst.Session.SocietyId);
+    print("1");
     wingId = prefs.getString(cnst.Session.WingId);
+    print("wingId");
+    print(wingId);
+    print("1");
     memberId = prefs.getString(cnst.Session.MemberId);
-    getFlatIds();
+    print("1");
+    getFlatIds(allFlat: false);
   }
 
   GetFamilyDetail() async {
@@ -174,6 +182,7 @@ class _SOSpageState extends State<SOSpage> {
             apiName: "member/getFlatMember",
             body: body).then((data) async {
           if (data.Data != null && data.Data.length > 0) {
+            allFlatMembersId.clear();
             setState(() {
               for(int i=0;i<data.Data.length;i++){
                 if(data.Data[i]["parentMember"].toString()!=null || data.Data[i]["parentMember"].toString() !="") {
@@ -196,6 +205,22 @@ class _SOSpageState extends State<SOSpage> {
     }
   }
 
+  String _lat = "", _long = "";
+
+  Future<void> _getLocation() async {
+    Position position = await Geolocator
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      _lat = position.latitude.toString();
+      _long = position.longitude.toString();
+    });
+    print("latitude");
+    print(_lat);
+    print("longitude");
+    print(_long);
+    print(position);
+  }
+
   sendSos(List watchmen,List flat,List family) async {
     try {
 
@@ -207,7 +232,8 @@ class _SOSpageState extends State<SOSpage> {
           // "receiverWatchmanIds" : (flat + family).toSet().toList(),
           "message" : emergencyText.text,
           "societyId": SocietyId,
-          "sendBy" : 1
+          "sendBy" : 1,
+          "gmapLink" : "https://www.google.com/maps?q=<${_lat}>,<${_long}>",
         };
         print("body");
         print(body);
@@ -251,38 +277,61 @@ class _SOSpageState extends State<SOSpage> {
   bool selWatchmen = false;
   bool selFamMem = false;
   bool selFlats = false;
+  bool selAllFlats = false;
   bool singleFlat=false;
   TextEditingController emergencyText = new TextEditingController();
   ProgressDialog pr;
 
-  getFlatIds() async {
+  getFlatIds({bool allFlat}) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         societyId=prefs.getString(cnst.Session.SocietyId);
-        wingId=prefs.getString(cnst.Session.WingId);
+        // wingId=prefs.getString(cnst.Session.WingId);
+        if(prefs.getString(cnst.Session.WingId).length > 0){
+          wingId = prefs.getString(cnst.Session.WingId).replaceAll("[", "")
+              .replaceAll("]", "").replaceAll(" ", "");
+        }
+        else{
+          wingId = prefs.getString(cnst.Session.WingId);
+        }
         var data = {
           "societyId" : societyId,
           "wingId" : wingId
         };
-        Services.responseHandler(apiName: "member/getOccupiedFlats",body: data).then((data) async {
+        print("data");
+        print(data);
+        Services.responseHandler(apiName: "member/getOccupiedFlats_v2",body: data).then((data) async {
           if (data.Data !=null) {
             flats.clear();
             flatsToMakeSort.clear();
             flatNumbersAndIds.clear();
             for(int i=0;i<data.Data.length;i++){
-              if(!flatsToMakeSort.contains(data.Data[i]["flatNo"])) {
-                flatsToMakeSort.add(data.Data[i]["flatNo"],);
-                flatNumbersAndIds.add({
-                  "flatNo" : data.Data[i]["flatNo"],
-                  "flatId" : data.Data[i]["_id"]
-                });
+              if(data.Data[i]["WingData"].length!=0) {
+                if(allFlat){
+                  flatsToMakeSort.add(data
+                      .Data[i]["flatNo"]);
+                  flatNumbersAndIds.add({
+                    "flatNo": data.Data[i]["flatNo"],
+                    "flatId": data.Data[i]["_id"],
+                  });
+                }
+                else {
+                  flatsToMakeSort.add("${data
+                      .Data[i]["WingData"][0]["wingName"]} - ${data
+                      .Data[i]["flatNo"]}");
+                  flatNumbersAndIds.add({
+                    "flatNo": data.Data[i]["flatNo"],
+                    "flatId": data.Data[i]["_id"],
+                    "wingName": data.Data[i]["WingData"][0]["wingName"]
+                  });
+                }
               }
             }
             flatsToMakeSort.sort();
-            print("flatsToMakeSort");
-            print(flatsToMakeSort);
+            print("flatNumbersAndIds");
+            print(flatNumbersAndIds);
             setState(() {
               for(int i=0;i<flatsToMakeSort.length;i++){
                 if(!flatNumbers.contains(FlatNo(name: flatsToMakeSort[i].toString()))) {
@@ -294,6 +343,15 @@ class _SOSpageState extends State<SOSpage> {
               print("flats after data");
               print(flatNumbers);
             });
+            if(allFlat){
+              flatIdsForBackend.clear();
+                for(int j=0;j<flatNumbersAndIds.length;j++){
+                    flatIdsForBackend.add(flatNumbersAndIds[j]["flatId"]);
+                }
+              getFlatMemberId(flatIdsForBackend);
+              print("flatIdsForBackend");
+              print(flatIdsForBackend);
+            }
           }
         }, onError: (e) {
           showMsg("$e");
@@ -403,49 +461,49 @@ class _SOSpageState extends State<SOSpage> {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.03,
             ),
-            Container(
-              height: 0.5,
-              color: Colors.black,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                    child: TextFormField(
-                      autovalidateMode: AutovalidateMode.always,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        icon: Icon(Icons.location_pin),
-                        hintText: 'Where is the emergency ?',
-                      ),
-                      onSaved: (String value) {
-                        // This optional block of code can be used to run
-                        // code when the user saves the form.
-                      },
-                      validator: (String value) {
-                        return value.contains('@')
-                            ? 'Do not use the @ char.'
-                            : null;
-                      },
-                    )),
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: RaisedButton(
-                    //     disabledColor: Colors.red,
-                    // disabledTextColor: Colors.black,
-                    textColor: Colors.white,
-                    color: cnst.appPrimaryMaterialColor,
-                    onPressed: () {},
-                    child: Text('MY LOCATION'),
-                  ),
-                ),
-              ],
-            ),
-            Container(
-              height: 0.5,
-              color: Colors.black,
-            ),
+            // Container(
+            //   height: 0.5,
+            //   color: Colors.black,
+            // ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     Expanded(
+            //         child: TextFormField(
+            //           autovalidateMode: AutovalidateMode.always,
+            //           decoration: const InputDecoration(
+            //             border: InputBorder.none,
+            //             icon: Icon(Icons.location_pin),
+            //             hintText: 'Where is the emergency ?',
+            //           ),
+            //           onSaved: (String value) {
+            //             // This optional block of code can be used to run
+            //             // code when the user saves the form.
+            //           },
+            //           validator: (String value) {
+            //             return value.contains('@')
+            //                 ? 'Do not use the @ char.'
+            //                 : null;
+            //           },
+            //         )),
+            //     Padding(
+            //       padding: const EdgeInsets.only(right: 8.0),
+            //       child: RaisedButton(
+            //         //     disabledColor: Colors.red,
+            //         // disabledTextColor: Colors.black,
+            //         textColor: Colors.white,
+            //         color: cnst.appPrimaryMaterialColor,
+            //         onPressed: () {},
+            //         child: Text('MY LOCATION'),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            // Container(
+            //   height: 0.5,
+            //   color: Colors.black,
+            // ),
             Column(
               children: [
                 // Row(
@@ -488,23 +546,44 @@ class _SOSpageState extends State<SOSpage> {
                 //     Text('Family Member'),
                 //   ],
                 // ),
-                Row(children: [Checkbox(
-                  value: selFlats,
-                  onChanged: (bool value) {
-                    setState(() {
-                      selFlats = !selFlats;
-                    });
-                    if(value){
+                Row(children: [
+                  Checkbox(
+                    value: selAllFlats,
+                    onChanged: (bool value) {
                       setState(() {
-                        getFlatIds();
+                        selAllFlats = !selAllFlats;
                       });
-                    }
-                    else{
-                      allFlatMembersId.clear();
-                    }
-                  },
+                      if(value){
+                        setState(() {
+                          getFlatIds(allFlat : true);
+                        });
+                      }
+                      else{
+                        allFlatMembersId.clear();
+                      }
+                    },
+                  ),
+                  Text('Select All Flats'),
+                ],
                 ),
-                  Text('Flats'),],),
+                !selAllFlats ? Row(children: [
+                  Checkbox(
+                    value: selFlats,
+                    onChanged: (bool value) {
+                      setState(() {
+                        selFlats = !selFlats;
+                      });
+                      if(value){
+                        setState(() {
+                          getFlatIds(allFlat: false);
+                        });
+                      }
+                      else{
+                        allFlatMembersId.clear();
+                      }
+                    },
+                  ),
+                  Text('Flats'),],):Container(),
                 selFlats == true ?
                 MultiSelectDialogField(
                   items: flatsToMakeSort
@@ -550,7 +629,8 @@ class _SOSpageState extends State<SOSpage> {
                     flatIdsForBackend.clear();
                     for(int i=0;i<allFlats.length;i++){
                       for(int j=0;j<flatNumbersAndIds.length;j++){
-                        if(flatNumbersAndIds[j]["flatNo"].toString() == allFlats[i].toString()){
+                        if((flatNumbersAndIds[j]["wingName"].toString()+flatNumbersAndIds[j]["flatNo"].toString()) ==
+                            allFlats[i].toString().replaceAll(" ", "").replaceAll("-", "")){
                           flatIdsForBackend.add(flatNumbersAndIds[j]["flatId"]);
                         }
                       }
@@ -573,7 +653,7 @@ class _SOSpageState extends State<SOSpage> {
                     allFamilyIds.toSet().toList();
                     print("allFlatMembersId");
                     print(allFlatMembersId);
-                    if(!selFlats){
+                    if(!selFlats && !selAllFlats){
                       Fluttertoast.showToast(
                         msg: "Please select at least One Field",
                         backgroundColor: Colors.red,
@@ -642,19 +722,6 @@ class _PopUpState extends State<PopUp> {
 
   @override
   void initState() {
-    // if(widget.selectedEmergency == "Fire"){
-    //   emergencyText.text = "Fire Emergency";
-    // }
-    // else if(widget.selectedEmergency == "Accident"){
-    //   emergencyText.text = "Accident Emergency";
-    // }
-    // else if(widget.selectedEmergency == "Criminal"){
-    //   emergencyText.text = "Crime Emergency";
-    // }
-    // else if(widget.selectedEmergency == "Kids Alert"){
-    //   emergencyText.text = "Kids Emergency";
-    // }
-
     _getLocaldata();
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
     pr.style(
@@ -675,6 +742,7 @@ class _PopUpState extends State<PopUp> {
   String SocietyId,flatId,memberId;
   List allFamilyIds = [],allWatchmenIds = [],allFlatMembersId = [];
   _getLocaldata() async {
+    print("1");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     SocietyId = prefs.getString(cnst.Session.SocietyId);
     wingId = prefs.getString(cnst.Session.WingId);
@@ -819,113 +887,6 @@ class _PopUpState extends State<PopUp> {
 
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // var body;
-        // if(selFamMem && selFlats && !selWatchmen){
-        //   body = {
-        //     "senderId" : memberId,
-        //     "receiverMemberIds" : flat + family,
-        //     "receiverWatchmanIds" : flat + family,
-        //     "message" : emergencyText.text,
-        //     "societyId": SocietyId,
-        //     "sendBy" : 1
-        //   };
-        //   print("body when only watchmen is not selected");
-        //   print(body);
-        // }
-        // else  if(!selFamMem && !selFlats && selWatchmen){
-        //   body = {
-        //     // "senderId" : memberId,
-        //     // "receiverIds" : recieverIds,
-        //     // "message" : "SOS notification",
-        //     // "isForMember" : false,
-        //     // "deviceType": Platform.isAndroid ? "Android" : "IOS"
-        //     "senderId" : memberId,
-        //     "receiverMemberIds" : watchmen,
-        //     "receiverWatchmanIds" : watchmen,
-        //     "message" : emergencyText.text,
-        //     "societyId": SocietyId,
-        //     "sendBy" : 0
-        //   };
-        //   print("body when only watchmen is selected");
-        //   print(body);
-        // }
-        // else  if(selFamMem && !selFlats && !selWatchmen){
-        //   body = {
-        //     // "senderId" : memberId,
-        //     // "receiverIds" : recieverIds,
-        //     // "message" : "SOS notification",
-        //     // "isForMember" : false,
-        //     // "deviceType": Platform.isAndroid ? "Android" : "IOS"
-        //     "senderId" : memberId,
-        //     "receiverMemberIds" : family,
-        //     "receiverWatchmanIds" : family,
-        //     "message" : emergencyText.text,
-        //     "societyId": SocietyId,
-        //     "sendBy" : 0
-        //   };
-        //   print("body when only family is selected");
-        //   print(body);
-        // }
-        // else  if(!selFamMem && selFlats && !selWatchmen && flat.length > 0){
-        //   body = {
-        //     // "senderId" : memberId,
-        //     // "receiverIds" : recieverIds,
-        //     // "message" : "SOS notification",
-        //     // "isForMember" : false,
-        //     // "deviceType": Platform.isAndroid ? "Android" : "IOS"
-        //     "senderId" : memberId,
-        //     "receiverMemberIds" : flat,
-        //     "receiverWatchmanIds" : flat,
-        //     "message" : emergencyText.text,
-        //     "societyId": SocietyId,
-        //     "sendBy" : 0
-        //   };
-        //   print("body when only flat is selected");
-        //   print(body);
-        // }
-        // else if(!selFamMem && selFlats && selWatchmen && flat.length > 0){
-        //   body = {
-        //     // "senderId" : memberId,
-        //     // "receiverIds" : recieverIds,
-        //     // "message" : "SOS notification",
-        //     // "isForMember" : false,
-        //     // "deviceType": Platform.isAndroid ? "Android" : "IOS"
-        //     "senderId" : memberId,
-        //     "receiverMemberIds" : flat,
-        //     "receiverWatchmanIds" : watchmen,
-        //     "message" : emergencyText.text,
-        //     "societyId": SocietyId,
-        //     "sendBy" : 0
-        //   };
-        //   print("body when only watchmen and flat is  selected");
-        //   print(body);
-        // }
-        // else if(selFamMem && !selFlats && selWatchmen){
-        //   body = {
-        //     // "senderId" : memberId,
-        //     // "receiverIds" : recieverIds,
-        //     // "message" : "SOS notification",
-        //     // "isForMember" : false,
-        //     // "deviceType": Platform.isAndroid ? "Android" : "IOS"
-        //     "senderId" : memberId,
-        //     "receiverMemberIds" : family,
-        //     "receiverWatchmanIds" : watchmen,
-        //     "message" : emergencyText.text,
-        //     "societyId": SocietyId,
-        //     "sendBy" : 0
-        //   };
-        //   print("body when only watchmen and family is selected");
-        //   print(body);
-        // }
-        // else{
-        //   // pr.hide();
-        //   Fluttertoast.showToast(
-        //     msg: "No Member Found in that Flat",
-        //     backgroundColor: Colors.red,
-        //     gravity: ToastGravity.BOTTOM,
-        //     textColor: Colors.white,
-        //   );
-        // }
         var body = {
           "senderId" : memberId,
           "receiverMemberIds" : flat ,
@@ -934,7 +895,8 @@ class _PopUpState extends State<PopUp> {
           "societyId": SocietyId,
           "sendBy" : 1
         };
-
+        print("body");
+        print(body);
         Services.responseHandler(
             apiName: "member/sendSOS",
             body: body).then((data) async {
@@ -995,13 +957,11 @@ class _PopUpState extends State<PopUp> {
             flatsToMakeSort.clear();
             flatNumbersAndIds.clear();
             for(int i=0;i<data.Data.length;i++){
-              if(!flatsToMakeSort.contains(data.Data[i]["flatNo"])) {
                 flatsToMakeSort.add(data.Data[i]["flatNo"],);
                 flatNumbersAndIds.add({
                   "flatNo" : data.Data[i]["flatNo"],
-                  "flatId" : data.Data[i]["_id"]
+                  "flatId" : data.Data[i]["_id"],
                 });
-              }
             }
             flatsToMakeSort.sort();
             print("flatsToMakeSort");
@@ -1149,7 +1109,7 @@ class _PopUpState extends State<PopUp> {
                 ),
                 searchable: true,
                 onConfirm: (List allFlats){
-                  print(allFlats);
+                  print(allFlats.toString().replaceAll(" ", "").replaceAll("-",""));
                   flatIdsForBackend.clear();
                   for(int i=0;i<allFlats.length;i++){
                     for(int j=0;j<flatNumbersAndIds.length;j++){

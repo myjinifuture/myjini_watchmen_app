@@ -217,7 +217,7 @@ class _AddStaffState extends State<AddStaff> {
           "societyId" : SocietyId,
           "wingId" : WingId
         };
-        Services.responseHandler(apiName: "admin/getFlatsOfSociety",body: data).then((data) async {
+        Services.responseHandler(apiName: "admin/getFlatsOfSociety_v1",body: data).then((data) async {
           setState(() {
             isLoading = false;
           });
@@ -322,7 +322,20 @@ class _AddStaffState extends State<AddStaff> {
   }];
   List flatIds = [];
   _SaveStaff() async {
-    if (txtName.text != "") {
+    print("checking");
+    print(Gender);
+    print(selectedWing);
+    print(selectFlat.length);
+    if (txtName.text == ""
+    || txtContactNo.text=="" || Gender==null  || selectedWing==null ||
+          selectFlat.length == 0
+    ) {
+      Fluttertoast.showToast(
+          msg: "Please Fill All Fields",
+          backgroundColor: Colors.red,
+          gravity: ToastGravity.TOP,
+          textColor: Colors.white);
+    }else{
       try {
         final result = await InternetAddress.lookup('google.com');
         if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -410,12 +423,7 @@ class _AddStaffState extends State<AddStaff> {
         // pr.hide();
         showMsg("No Internet Connection.");
       }
-    } else
-      Fluttertoast.showToast(
-          msg: "Please Fill All Fields",
-          backgroundColor: Colors.red,
-          gravity: ToastGravity.TOP,
-          textColor: Colors.white);
+    }
   }
 
   Future getImage() async {

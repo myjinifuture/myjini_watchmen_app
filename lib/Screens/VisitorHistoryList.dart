@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smartsocietystaff/Common/Constants.dart' as constant;
 import 'package:smartsocietystaff/Common/Services.dart';
 import 'package:smartsocietystaff/Component/LoadingComponent.dart';
 import 'package:smartsocietystaff/Component/NoDataComponent.dart';
 import 'package:smartsocietystaff/Component/VisitorHistoryComponent.dart';
+import 'package:smartsocietystaff/Common/Constants.dart' as cnst;
 
 class VisitorHistoryList extends StatefulWidget {
   @override
@@ -17,30 +19,50 @@ class _VisitorHistoryListState extends State<VisitorHistoryList> {
 
   List _Visitorlist = [];
   List searchvisitordata = new List();
+  String societyId = "";
   bool isLoading = false;
   bool _isSearching = true, isfirst = false;
 
   @override
   void initState() {
-    _getVsiitor();
+    _getInsideVisitor();
+    _getLocaldata();
   }
 
-  _getVsiitor() async {
+  _getLocaldata() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    societyId = prefs.getString(cnst.Session.SocietyId);
+  }
+
+  _getInsideVisitor() async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        Future res = Services.getVisitorData();
+        var data = {
+          "societyId" : societyId
+        };
+
         setState(() {
           isLoading = true;
         });
-        res.then((data) async {
-          if (data != null && data.length > 0) {
+        Services.responseHandler(apiName: "watchman/getAllVisitorEntry",body: data).then((data) async {
+          _Visitorlist.clear();
+          if (data.Data != null && data.Data.length > 0) {
             setState(() {
-              _Visitorlist = data;
+              // _visitorInsideList = data.Data;
               isLoading = false;
+              for(int i=0;i<data.Data.length;i++){
+                if(data.Data[i]["outDateTime"].length == 0){
+                  print("deleted");
+                  _Visitorlist.add(data.Data[i]);
+                  // _visitorInsideList.length--;
+                }
+              }
+              _Visitorlist = _Visitorlist.reversed.toList();
             });
           } else {
             setState(() {
+              _Visitorlist = data.Data;
               isLoading = false;
             });
           }
@@ -92,7 +114,6 @@ class _VisitorHistoryListState extends State<VisitorHistoryList> {
             child: TextFormField(
               style: TextStyle(color: Colors.white),
               autofocus: false,
-
               textInputAction: TextInputAction.done,
               controller: _searchcontroller,
               onChanged: searchOperation,
@@ -150,10 +171,12 @@ class _VisitorHistoryListState extends State<VisitorHistoryList> {
     for (int i = 0; i < _Visitorlist.length; i++) {
       String name = _Visitorlist[i]["Name"].toString();
       String mobile = _Visitorlist[i]["ContactNo"].toString();
-      String UniqCode = _Visitorlist[i]["UniqCode"].toString();
+      String WingData = _Visitorlist[i]["WingData"][0]["wingName"].toString();
+      String flatData = _Visitorlist[i]["FlatData"][0]["flatNo"].toString();
       if (name.toLowerCase().contains(searchText.toLowerCase()) ||
           mobile.toLowerCase().contains(searchText.toLowerCase()) ||
-          UniqCode.toLowerCase().contains(searchText.toLowerCase())) {
+          WingData.toLowerCase().contains(searchText.toLowerCase())||
+          flatData.toLowerCase().contains(searchText.toLowerCase())) {
         print(_Visitorlist[i]);
         searchvisitordata.add(_Visitorlist[i]);
       }

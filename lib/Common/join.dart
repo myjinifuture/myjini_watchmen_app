@@ -245,9 +245,9 @@ class _JoinPageState extends State<JoinPage> {
               color: Colors.green,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
               onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pop(context);
+                // Navigator.pop(context);
+                // Navigator.pop(context);
+                // Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -298,7 +298,7 @@ class _JoinPageState extends State<JoinPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/WatchmanDashboard");
+        Navigator.pop(context);
       },
       child: Scaffold(
         appBar: AppBar(

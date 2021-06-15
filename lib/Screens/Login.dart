@@ -17,6 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unique_identifier/unique_identifier.dart';
 
 import 'OTP.dart';
+import 'WatchmanDashboard.dart';
 
 ProgressDialog pr;
 
@@ -196,7 +197,13 @@ class _LoginState extends State<Login> {
               // );
               // data[0]["Role"].toString() == "Watchmen"
               //     ?
-              Navigator.pushReplacementNamed(context, '/WatchmanDashboard');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => WatchmanDashboard(societyName : ""),
+                ),
+              );
+              // Navigator.pushReplacementNamed(context, '/WatchmanDashboard');
                   // : Navigator.pushReplacementNamed(context, '/Dashboard');
             } else {
               // pr.hide();
@@ -391,17 +398,17 @@ class _LoginState extends State<Login> {
                         }
                         else if(txtMobileNo.text != ''){
                           print(selectedStaffId);
-                          checkLogin(selectedStaffId);
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //       builder: (context) => OTP(
-                          //         mobileNo: txtMobileNo.text.toString(),
-                          //         onSuccess: () {s
-                          //           checkLogin(selectedStaffId);
-                          //         },
-                          //       ),
-                          //     ));
+                          // checkLogin(selectedStaffId);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => OTP(
+                                  mobileNo: txtMobileNo.text.toString(),
+                                  onSuccess: () {
+                                    checkLogin(selectedStaffId);
+                                  },
+                                ),
+                              ));
                         }
                         else{
                           Fluttertoast.showToast(

@@ -31,19 +31,24 @@ class _VisitorOutSideListState extends State<VisitorOutSideList> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     societyId = prefs.getString(Session.SocietyId);
   }
-  _getInsideVisitor() async {
+  _getInsideVisitor({String fromDate,String toDate}) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var data = {
-          "societyId" : societyId
+          "societyId" : societyId,
+          "fromDate" : fromDate,
+          "toDate" : toDate
         };
+        print("data");
+        print(data);
         Future res = Services.responseHandler(apiName: "watchman/getAllVisitorEntry",body: data);
         setState(() {
           isLoading = true;
         });
         res.then((data) async {
           if (data.Data != null && data.Data.length > 0) {
+            _visitorOutsideList.clear();
             setState(() {
               // _visitorOutsideList = data.Data;
               isLoading = false;
@@ -264,44 +269,11 @@ class _VisitorOutSideListState extends State<VisitorOutSideList> {
                             color: Colors.white,
                           ),
                           onPressed: () {
-                            searchList.clear();
-                            var start,end,formatDate,secondDigit,thirdDigit;
-                            if(_fromDate.compareTo(_toDate) > 0){
-                              print("not allowed");
-                              setState(() {
-                                searchList.clear();
-                                isSearching = true;
-                              });
-                            }
-                            else{
-                              for(int i=0;i<_visitorOutsideList.length;i++){
-                                start = _fromDate;
-                                end = _toDate;
-                                if(int.parse(_visitorOutsideList[i]["Date"].toString().split(" ")[0].split("/")[0]) < 10){
-                                  secondDigit = "0" + _visitorOutsideList[i]["Date"].toString().split(" ")[0].split("/")[0];
-                                }
-                                else{
-                                  secondDigit =  _visitorOutsideList[i]["Date"].toString().split(" ")[0].split("/")[0];
-                                }
-                                if(int.parse(_visitorOutsideList[i]["Date"].toString().split(" ")[0].split("/")[1]) < 10){
-                                  thirdDigit = "0" + _visitorOutsideList[i]["Date"].toString().split(" ")[0].split("/")[1];
-                                }
-                                else{
-                                  thirdDigit =  _visitorOutsideList[i]["Date"].toString().split(" ")[0].split("/")[1];
-                                }
-                                formatDate = _visitorOutsideList[i]["Date"].toString().split(" ")[0].split("/")[2] +
-                                    "-" + secondDigit + "-" + thirdDigit + " " + "00:00:00.000000";
-                                Duration difference1 = end.difference(DateTime.parse(formatDate));
-                                Duration difference2 = start.difference(DateTime.parse(formatDate));
-                                if(int.parse(difference1.toString().split(":")[0]) >=0 && int.parse(difference2.toString().split(":")[0]) <=0){
-                                  if(!searchList.contains(_visitorOutsideList[i])){
-                                    setState(() {
-                                      searchList.add(_visitorOutsideList[i]);
-                                      isSearching = true;
-                                    });
-                                  }}
-                              }
-                            }
+                            _getInsideVisitor(fromDate: _fromDate.toString().split(" ")[0].split("-")[2]+"/" +
+                                _fromDate.toString().split(" ")[0].split("-")[1]+"/" +
+                                _fromDate.toString().split(" ")[0].split("-")[0],toDate: _toDate.toString().split(" ")[0].split("-")[2]+"/" +
+                                _toDate.toString().split(" ")[0].split("-")[1]+"/" +
+                                _toDate.toString().split(" ")[0].split("-")[0]);
                             // getStaffData(_fromDate.toString(),
                             //     _toDate.toString(), selectedWing);
                           }),

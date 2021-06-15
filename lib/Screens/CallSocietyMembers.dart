@@ -112,7 +112,7 @@ class _CallSocietyMembersState extends State<CallSocietyMembers> {
     print(MemberData);
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/WatchmanDashboard");
+        Navigator.of(context).pop();
       },
       child: Scaffold(
         appBar: buildAppBar(context),
@@ -143,43 +143,40 @@ class _CallSocietyMembersState extends State<CallSocietyMembers> {
               ),
             )
                 : Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 1.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  child:
-                 MemberData.length > 0 &&
-                      MemberData != null
-                      ? searchMemberData.length > 0
-                      ? ListView.builder(
-                    itemCount:
-                    searchMemberData.length,
-                    shrinkWrap: true,
-                    itemBuilder:
-                        (BuildContext context,
-                        int index) {
-                      return MemberComponent(
-                          searchMemberData[
-                          index]);
-                    },
-                  )
-                      : ListView.builder(
-                    padding:
-                    EdgeInsets.all(0),
-                    itemCount:
-                    MemberData.length,
-                    itemBuilder:
-                        (BuildContext context,
-                        int index) {
-                      return MemberComponent(
-                          MemberData[index]);
-                    },
-                  )
-                      : Container(
-                    child: Center(
-                        child:
-                        Text("No Member Found")),
-                  ),
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                child:
+               MemberData.length > 0 &&
+                    MemberData != null
+                    ? searchMemberData.length > 0
+                    ? ListView.builder(
+                  itemCount:
+                  searchMemberData.length,
+                  shrinkWrap: true,
+                  itemBuilder:
+                      (BuildContext context,
+                      int index) {
+                    return MemberComponent(
+                        searchMemberData[
+                        index]);
+                  },
+                )
+                    : ListView.builder(
+                  padding:
+                  EdgeInsets.all(0),
+                  itemCount:
+                  MemberData.length,
+                  itemBuilder:
+                      (BuildContext context,
+                      int index) {
+                    return MemberComponent(
+                        MemberData[index]);
+                  },
+                )
+                    : Container(
+                  child: Center(
+                      child:
+                      Text("No Member Found")),
                 ),
               ),
             ),
@@ -195,7 +192,7 @@ class _CallSocietyMembersState extends State<CallSocietyMembers> {
       leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushReplacementNamed(context, "/WatchmanDashboard");
+            Navigator.of(context).pop();
           }),
       actions: <Widget>[
         new IconButton(

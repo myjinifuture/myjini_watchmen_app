@@ -147,17 +147,17 @@ class _DashboardState extends State<Dashboard> {
     _getMembers();
     _getDashboardCount();
 
-    if (Platform.isIOS) {
-      iosSubscription =
-          _firebaseMessaging.onIosSettingsRegistered.listen((data) {
-        print("FFFFFFFF" + data.toString());
-        saveDeviceToken();
-      });
-      _firebaseMessaging
-          .requestNotificationPermissions(IosNotificationSettings());
-    } else {
-      saveDeviceToken();
-    }
+    // if (Platform.isIOS) {
+    //   iosSubscription =
+    //       _firebaseMessaging.onIosSettingsRegistered.listen((data) {
+    //     print("FFFFFFFF" + data.toString());
+    //     saveDeviceToken();
+    //   });
+    //   _firebaseMessaging
+    //       .requestNotificationPermissions(IosNotificationSettings());
+    // } else {
+    //   saveDeviceToken();
+    // }
     final permissionValidator = EasyPermissionValidator(
       context: context,
       appName: 'Easy Permission Validator',
@@ -189,17 +189,42 @@ class _DashboardState extends State<Dashboard> {
     } on SocketException catch (_) {}
   }
 
+  String watchmenId;
   _getLocalData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       memberType = prefs.getString(Session.Role);
+      watchmenId = prefs.getString(Session.MemberId);
     });
   }
 
   _logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.clear();
-    Navigator.pushReplacementNamed(context, "/Login");
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var body = {
+          "watchmanId": watchmenId,
+          "playerId": prefs.getString('playerId')
+        };
+        print("body");
+        print(body);
+        Future res = Services.responseHandler(apiName: 'watchman/logout',body: body);
+        res.then((data) async {
+          prefs.clear();
+          Navigator.pushReplacementNamed(context, "/Login");
+        }, onError: (e) {
+          showMsg("Something Went Wrong Please Try Again");
+          setState(() {});
+        });
+      } else {
+        showMsg("No Internet Connection.");
+        setState(() {});
+      }
+    } on SocketException catch (_) {
+      showMsg("No Internet Connection.");
+      setState(() {});
+    }
   }
 
   _getMembers() async {

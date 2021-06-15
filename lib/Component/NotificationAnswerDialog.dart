@@ -29,9 +29,11 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    print("widget.data");
+    print(widget.data);
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/WatchmanDashboard");
+        Navigator.pop(context);
       },
       child: Container(
         color: Colors.black54,
@@ -53,9 +55,38 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
               )
                   : widget.data["NotificationType"] == "VisitorRejected" ? Container() : Padding(
                 padding: const EdgeInsets.only( top: 15.0, bottom: 8.0 ),
-                child: Image.asset(
+                child: widget.data["notificationType"] == "UnknownVisitor"|| widget.data["NotificationType"] == "InstantWatchmanMessage" ? Container() : Image.asset(
                     'images/SOSwatchman.png', height: 70, width: 70 ),
               )):Container(),
+              widget.data["NotificationType"] == "InstantWatchmanMessage" ?  Padding(
+                padding: const EdgeInsets.only( top: 8.0 ),
+                child: Column(
+                  children: <Widget>[
+                    // Padding(
+                    //   padding: const EdgeInsets.only( top: 15.0 ),
+                    //   child: Text( '${widget.data["Name"]}',
+                    //       style: TextStyle(
+                    //           fontSize: 16, fontWeight: FontWeight.bold ) ),
+                    // ),
+                    Padding(
+                      padding: const EdgeInsets.only( top: 15.0,left: 25 ),
+                      child: Text( '${widget.data["Message"]}',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600 ) ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only( bottom: 20.0 ),
+                      child: Text(
+                          '${widget.data["Wing"]}'
+                              '-'
+                              '${widget.data["Flat"]}',
+                          style: TextStyle(
+                              fontSize: 17, fontWeight: FontWeight.bold ) ),
+                    ),
+                  ],
+                ),
+              ):Container(),
               widget.data["Message"] == "APPROVED"
                   ? Padding(
                 padding: const EdgeInsets.only( top: 8.0 ),
@@ -72,7 +103,12 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only( bottom: 20.0 ),
-                      child: Text(
+                      child: widget.data["NotificationType"] == "InstantWatchmanMessage" ? Text(
+                          '${widget.data["Wing"]}'
+                              '-'
+                              '${widget.data["Flat"]}',
+                          style: TextStyle(
+                              fontSize: 17, fontWeight: FontWeight.bold ) ): Text(
                           '${widget.data["WingName"]}'
                               '-'
                               '${widget.data["FlatNo"]}',
@@ -127,12 +163,12 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.w600 ) ):
-                      Text( "Emergency Message",
+                      widget.data["notificationType"] == "UnknownVisitor" || widget.data["NotificationType"] == "InstantWatchmanMessage"? Container() : Text( "Emergency Message",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.w600 ) ),
                       Divider( ),
-                      widget.data["Message"] == "Response Regarding Visitor Entry" ? Padding(
+                      widget.data["NotificationType"] == "InstantWatchmanMessage" ? Container() :widget.data["Message"] == "Response Regarding Visitor Entry" ? Padding(
                         padding: const EdgeInsets.only( top: 15.0,left: 25 ),
                         child: Text( 'Rejected Dont Let them come inside',
                             style: TextStyle(
@@ -148,7 +184,7 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
                       Column(
                         children: [
                           SizedBox(height: 20,),
-                          widget.data["NotificationType"]!='SOS'?Row(
+                          widget.data["notificationType"] == "UnknownVisitor" || widget.data["NotificationType"] == "InstantWatchmanMessage"? Container() :  widget.data["NotificationType"]!='SOS'?Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               // Text("Accepted By ${widget.data["data"]["memberName"]}",
@@ -164,18 +200,21 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
                                 ),
                               ),
                             ],
-                          ):Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text("${widget.data["Name"]}",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
+                          ):SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text("${widget.data["Name"]}",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                          widget.data["NotificationType"]!='SOS'?Row(
+                          widget.data["notificationType"] == "UnknownVisitor" || widget.data["NotificationType"] == "InstantWatchmanMessage"? Container() : widget.data["NotificationType"]!='SOS'?Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text("${widget.data["Wing"]}" + " - "
@@ -186,7 +225,7 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
                               ),
                               ),
                             ],
-                          ):Row(
+                          ):widget.data["notificationType"] == "UnknownVisitor" ? Container() : Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text("${widget.data["SenderWing"]}" + " - "
@@ -228,7 +267,7 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
                     ],
                   )
               ),
-              RaisedButton(
+              widget.data["NotificationType"] == "InstantWatchmanMessage" ? Container() :RaisedButton(
                 color: Colors.white,
                 child:  Text('Check Location',
                   style: TextStyle(
@@ -247,7 +286,8 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
                   color: Colors.grey[200],
                   onPressed: () {
                     // Get.back();
-                    Navigator.pushReplacementNamed(context, "/WatchmanDashboard");
+                    Navigator.pop(context);
+                    Navigator.pop(context);
                   },
                   child: Text( "OK",
                       style:

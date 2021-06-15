@@ -179,16 +179,24 @@ class _MemberComponentState extends State<MemberComponent> {
     Id = prefs.getString(constant.Session.Member_Id);
   }*/
 
+  var wingId = "";
   callingToMemberFromWatchmen(bool CallingType) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       SharedPreferences prefs = await SharedPreferences.getInstance();
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        if(prefs.getString(Session.WingId).length > 0){
+          wingId = prefs.getString(Session.WingId).replaceAll("[", "")
+              .replaceAll("]", "").split(",")[0];
+        }
+        else{
+          wingId = prefs.getString(Session.WingId);
+        }
         var data = {
           // "FromName": prefs.getString(Session.Name),
           // "ToName" : widget.MemberData["Name"].toString(),
           "watchmanId": prefs.getString(Session.MemberId),
-          "callerWingId" : prefs.getString(Session.WingId),
+          "callerWingId" : wingId,
           "receiverMemberId" : widget.MemberData["_id"].toString(),
           "receiverWingId":widget.MemberData["WingData"][0]["_id"].toString(),
           "receiverFlatId": widget.MemberData["FlatData"][0]["_id"].toString(),
@@ -197,33 +205,38 @@ class _MemberComponentState extends State<MemberComponent> {
           "societyId" : prefs.getString(Session.SocietyId),
           "isVideoCall" : CallingType,
           "callFor" : 2,
-          "deviceType" : Platform.isAndroid ? "Android" : "IOS"
+          // "deviceType" : Platform.isAndroid ? "Android" : "IOS"
         };
-        print("data");
+        print("data2323");
         print(data);
+        print(prefs.getString(Session.WingId));
 
 
         Services.responseHandler(apiName: "member/memberCalling",body: data).then((data) async {
-
-          if (data.Data != "0" && data.IsSuccess == true) {
-            // SharedPreferences preferences =
-            // await SharedPreferences.getInstance();
-            // await preferences.setString('data', data.Data);
-            // await for camera and mic permissions before pushing video page
+          // if(data.Data.length==0){
+          //   Fluttertoast.showToast(
+          //       msg: 'busy hai',
+          //       backgroundColor: Colors.red,
+          //       gravity: ToastGravity.TOP,
+          //       textColor: Colors.white);
+          // }
+          // else
+            if (data.Data != "0" && data.IsSuccess == true && data.Data.length > 0) {
+            print("data.Data");
+            print(data.Data);
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => FromMemberScreen(fromMemberData: widget.MemberData,CallingType: "${CallingType}",),
+                builder: (context) => FromMemberScreen(fromMemberData: widget.MemberData,CallingType: "${CallingType}",unknown: false,id:data.Data[0]["_id"]),
               ),
             );
-            /*Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => JoinPage(
-                    )
-                  );*/
           } else {
-
+              Fluttertoast.showToast(
+                msg: "User is busy on another call",
+                backgroundColor: Colors.red,
+                gravity: ToastGravity.TOP,
+                textColor: Colors.white,
+              );
           }
         }, onError: (e) {
           showHHMsg("Try Again.","MyJini");
@@ -245,7 +258,7 @@ class _MemberComponentState extends State<MemberComponent> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ClipOval(
                   child: widget.MemberData["Image"] != '' &&
@@ -265,63 +278,55 @@ class _MemberComponentState extends State<MemberComponent> {
                       color: appPrimaryMaterialColor,
                     ),
                     child: Center(
-                      child: Expanded(
-                        child: Text(
-                          "${widget.MemberData["Name"].toString().substring(0, 1).toUpperCase()}",
-                          style: TextStyle(
-                              fontSize: 25, color: Colors.white),
-                        ),
+                      child: Text(
+                        "${widget.MemberData["Name"].toString().substring(0, 1).toUpperCase()}",
+                        style: TextStyle(
+                            fontSize: 25, color: Colors.white),
                       ),
                     ),
                   ),
                 ),
-
-                Column(
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Padding(
-                          padding:  EdgeInsets.only(left: 8.0, bottom: 6.0,right:MediaQuery.of(context).size.width/3.5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                "${widget.MemberData["Name"]}",
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.grey[700],
-                                  ),
-                              ),
-                              widget.MemberData["IsPrivate"] ==
-                                  false ||
-                                  widget.MemberData
-                                  ["IsPrivate"] ==
-                                      null
-                                  ? Text(
-                                  '${widget.MemberData["ContactNo"]}')
-                                  : Text(
-                                  '${widget.MemberData["ContactNo"]}'
-                                      .replaceRange(0, 8, "********")),
-                              Text(
-                                "${widget.MemberData["WingData"][0]["wingName"]} - ${widget.MemberData["FlatData"][0]["flatNo"]}",
-                                style: TextStyle(
-                                    color: Colors.grey[600], fontSize: 13),
-                              ),
-                              /*Text(
-                                "${widget.MemberData["ResidenceType"]}"
-                                    .checkForNull(),
-                                style: TextStyle(
-                                    color: constant.appPrimaryMaterialColor,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600),
-                              )*/
-                            ],
-                          ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        width: MediaQuery.of(context).size.width*0.5,
+                        child: Text(
+                          "${widget.MemberData["Name"]}",
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[700],
+                            ),
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      widget.MemberData["IsPrivate"] ==
+                          false ||
+                          widget.MemberData
+                          ["IsPrivate"] ==
+                              null
+                          ? Text(
+                          '${widget.MemberData["ContactNo"]}')
+                          : Text(
+                          '${widget.MemberData["ContactNo"]}'
+                              .replaceRange(0, 8, "********")),
+                      Text(
+                        "${widget.MemberData["WingData"][0]["wingName"]} - ${widget.MemberData["FlatData"][0]["flatNo"]}",
+                        style: TextStyle(
+                            color: Colors.grey[600], fontSize: 13),
+                      ),
+                      /*Text(
+                        "${widget.MemberData["ResidenceType"]}"
+                            .checkForNull(),
+                        style: TextStyle(
+                            color: constant.appPrimaryMaterialColor,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600),
+                      )*/
+                    ],
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right:16.0),

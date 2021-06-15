@@ -23,8 +23,9 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class EnterCodeScanScreen extends StatefulWidget {
   var data;
+  String societyName=  "";
 
-  EnterCodeScanScreen(this.data);
+  EnterCodeScanScreen(this.data,{this.societyName});
 
   @override
   _EnterCodeScanScreenState createState() => new _EnterCodeScanScreenState();
@@ -58,10 +59,10 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
 
   // final List<String> _visitorType = ["Visitor", "Staff"];
 
-
   //video call..............................
   final _channelController = TextEditingController();
   bool _validateError = false;
+
   // ClientRole _role = ClientRole.Broadcaster;
   //
   stt.SpeechToText _speech;
@@ -106,14 +107,14 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        var data = {
-          "societyId" : id
-        };
+        var data = {"societyId": id};
 
         setState(() {
           isLoading = true;
         });
-        Services.responseHandler(apiName: "watchman/getAllVisitorEntry",body: data).then((data) async {
+        Services.responseHandler(
+                apiName: "watchman/getAllVisitorEntry", body: data)
+            .then((data) async {
           _visitorList.clear();
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
@@ -158,18 +159,18 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
     _getInsideVisitor(societyId);
   }
 
-  List memberData= [];
+  List memberData = [];
+
   _getDirectoryListing(String SocietyId) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        var data = {
-          "societyId" : SocietyId
-        };
+        var data = {"societyId": SocietyId};
         // setState(() {
         //   isLoading = true;
         // });
-        Services.responseHandler(apiName: "admin/directoryListing",body: data).then((data) async {
+        Services.responseHandler(apiName: "admin/directoryListing", body: data)
+            .then((data) async {
           memberData.clear();
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
@@ -197,7 +198,7 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
     }
   }
 
-  callingToMemberFromWatchmen(bool CallingType,var dataofMember) async {
+  callingToMemberFromWatchmen(bool CallingType, var dataofMember) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -206,31 +207,31 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
           // "FromName": prefs.getString(Session.Name),
           // "ToName" : widget.MemberData["Name"].toString(),
           "watchmanId": prefs.getString(Session.MemberId),
-          "callerWingId" : prefs.getString(Session.WingId),
-          "receiverMemberId" : dataofMember["_id"].toString(),
-          "receiverWingId":dataofMember["WingData"][0]["_id"].toString(),
-          "receiverFlatId":dataofMember["FlatData"][0]["_id"].toString(),
+          "callerWingId": prefs.getString(Session.WingId),
+          "receiverMemberId": dataofMember["_id"].toString(),
+          "receiverWingId": dataofMember["WingData"][0]["_id"].toString(),
+          "receiverFlatId": dataofMember["FlatData"][0]["_id"].toString(),
           "contactNo": dataofMember["ContactNo"].toString(),
-          "AddedBy" : "Member",
-          "societyId" : prefs.getString(Session.SocietyId),
-          "isVideoCall" : CallingType,
-          "callFor" : 2,
-          "deviceType" : Platform.isAndroid ? "Android" : "IOS"
+          "AddedBy": "Member",
+          "societyId": prefs.getString(Session.SocietyId),
+          "isVideoCall": CallingType,
+          "callFor": 2,
+          // "deviceType": Platform.isAndroid ? "Android" : "IOS"
         };
         print("data");
         print(data);
-
-        Services.responseHandler(apiName: "member/memberCalling",body: data).then((data) async {
-
+        Services.responseHandler(apiName: "member/memberCalling", body: data)
+            .then((data) async {
           if (data.Data != "0" && data.IsSuccess == true) {
-            // SharedPreferences preferences =
-            // await SharedPreferences.getInstance();
-            // await preferences.setString('data', data.Data);
-            // await for camera and mic permissions before pushing video page
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => FromMemberScreen(fromMemberData: dataofMember,CallingType: "${CallingType}",),
+                builder: (context) => FromMemberScreen(
+                  fromMemberData: dataofMember,
+                  CallingType: "${CallingType}",
+                  unknown: false,
+                  id: data.Data[0]["_id"],
+                ),
               ),
             );
             /*Navigator.push(
@@ -239,9 +240,7 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                       builder: (context) => JoinPage(
                     )
                   );*/
-          } else {
-
-          }
+          } else {}
         }, onError: (e) {
           showMsg("Try Again.");
         });
@@ -253,30 +252,30 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
   }
 
   List wingList = [];
+
   getWingsId(String societyId) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       SharedPreferences prefs = await SharedPreferences.getInstance();
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        var body = {
-          "societyId" : societyId
-        };
-        Services.responseHandler(apiName: "admin/getAllWingOfSociety",body: body).then((data) async {
-          if (data !=null) {
+        var body = {"societyId": societyId};
+        Services.responseHandler(
+                apiName: "admin/getAllWingOfSociety", body: body)
+            .then((data) async {
+          if (data != null) {
             setState(() {
               wingList = data.Data;
             });
-            if(wingList.length==0){
-                Fluttertoast.showToast(
-                    msg: "No Wings Found",
-                    backgroundColor: Colors.red,
-                    gravity: ToastGravity.TOP,
-                    textColor: Colors.white);
+            if (wingList.length == 0) {
+              Fluttertoast.showToast(
+                  msg: "No Wings Found",
+                  backgroundColor: Colors.red,
+                  gravity: ToastGravity.TOP,
+                  textColor: Colors.white);
             }
           }
         }, onError: (e) {
-          Fluttertoast.showToast(
-              msg: "$e", toastLength: Toast.LENGTH_LONG);
+          Fluttertoast.showToast(msg: "$e", toastLength: Toast.LENGTH_LONG);
         });
       } else {
         Fluttertoast.showToast(
@@ -342,157 +341,179 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
 
   _logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.clear();
-    Navigator.pushReplacementNamed(context, "/Login");
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var body = {
+          "watchmanId": WatchManId,
+          "playerId": prefs.getString('playerId')
+        };
+        print("body");
+        print(body);
+        Future res = Services.responseHandler(apiName: 'watchman/logout',body: body);
+        res.then((data) async {
+          prefs.clear();
+          Navigator.pushReplacementNamed(context, "/Login");
+        }, onError: (e) {
+          showMsg("Something Went Wrong Please Try Again");
+          setState(() {});
+        });
+      } else {
+        showMsg("No Internet Connection.");
+        setState(() {});
+      }
+    } on SocketException catch (_) {
+      showMsg("No Internet Connection.");
+      setState(() {});
+    }
   }
 
-
   String inputCode;
+
   get _getOtpKeyboard {
     return new Container(
-        height: _screenSize.width - 80,
-        child: new Column(
-          children: <Widget>[
-            new Expanded(
-              child: new Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  _otpKeyboardInputButton(
-                      label: "1",
-                      onPressed: () {
-                        _setCurrentDigit(1);
-                      }),
-                  _otpKeyboardInputButton(
-                      label: "2",
-                      onPressed: () {
-                        _setCurrentDigit(2);
-                      }),
-                  _otpKeyboardInputButton(
-                      label: "3",
-                      onPressed: () {
-                        _setCurrentDigit(3);
-                      }),
-
-                ],
-              ),
+      height: _screenSize.width - 80,
+      child: new Column(
+        children: <Widget>[
+          new Expanded(
+            child: new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                _otpKeyboardInputButton(
+                    label: "1",
+                    onPressed: () {
+                      _setCurrentDigit(1);
+                    }),
+                _otpKeyboardInputButton(
+                    label: "2",
+                    onPressed: () {
+                      _setCurrentDigit(2);
+                    }),
+                _otpKeyboardInputButton(
+                    label: "3",
+                    onPressed: () {
+                      _setCurrentDigit(3);
+                    }),
+              ],
             ),
-            new Expanded(
-              child: new Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  _otpKeyboardInputButton(
-                      label: "4",
-                      onPressed: () {
-                        _setCurrentDigit(4);
-                      }),
-                  _otpKeyboardInputButton(
-                      label: "5",
-                      onPressed: () {
-                        _setCurrentDigit(5);
-                      }),
-                  _otpKeyboardInputButton(
-                      label: "6",
-                      onPressed: () {
-                        _setCurrentDigit(6);
-                      }),
-                ],
-              ),
+          ),
+          new Expanded(
+            child: new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                _otpKeyboardInputButton(
+                    label: "4",
+                    onPressed: () {
+                      _setCurrentDigit(4);
+                    }),
+                _otpKeyboardInputButton(
+                    label: "5",
+                    onPressed: () {
+                      _setCurrentDigit(5);
+                    }),
+                _otpKeyboardInputButton(
+                    label: "6",
+                    onPressed: () {
+                      _setCurrentDigit(6);
+                    }),
+              ],
             ),
-            new Expanded(
-              child: new Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  _otpKeyboardInputButton(
-                      label: "7",
-                      onPressed: () {
-                        _setCurrentDigit(7);
-                      }),
-                  _otpKeyboardInputButton(
-                      label: "8",
-                      onPressed: () {
-                        _setCurrentDigit(8);
-                      }),
-                  _otpKeyboardInputButton(
-                      label: "9",
-                      onPressed: () {
-                        _setCurrentDigit(9);
-                      }),
-                ],
-              ),
+          ),
+          new Expanded(
+            child: new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                _otpKeyboardInputButton(
+                    label: "7",
+                    onPressed: () {
+                      _setCurrentDigit(7);
+                    }),
+                _otpKeyboardInputButton(
+                    label: "8",
+                    onPressed: () {
+                      _setCurrentDigit(8);
+                    }),
+                _otpKeyboardInputButton(
+                    label: "9",
+                    onPressed: () {
+                      _setCurrentDigit(9);
+                    }),
+              ],
             ),
-            new Expanded(
-              child: new Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: GestureDetector(
-                      onTap: onJoin,
-                      child: Column(
-                        children: <Widget>[
-                          SizedBox(
-                            width: 80,
-                          ),
-                          FloatingActionButton(
-                            onPressed: (){
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) => SOSpage()));
-                            },
-                            backgroundColor: Colors.red[200],
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.red[400],
-                                    borderRadius: BorderRadius.circular(100.0)),
-                                width: 40,
-                                height: 40,
-                                child: Center(
-                                    child: Text(
-                                      "SOS",
-                                      style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white),
-                                    ))),
-                          ),
-                        ],
-                      ),
+          ),
+          new Expanded(
+            child: new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: GestureDetector(
+                    onTap: onJoin,
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          width: 80,
+                        ),
+                        FloatingActionButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SOSpage()));
+                          },
+                          backgroundColor: Colors.red[200],
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.red[400],
+                                  borderRadius: BorderRadius.circular(100.0)),
+                              width: 40,
+                              height: 40,
+                              child: Center(
+                                  child: Text(
+                                "SOS",
+                                style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ))),
+                        ),
+                      ],
                     ),
                   ),
-                  _otpKeyboardInputButton(
-                      label: "0",
-                      onPressed: () {
-                        _setCurrentDigit(0);
-                      }),
-                  _otpKeyboardActionButton(
-                      label: new Icon(
-                        Icons.backspace,
-                        size: 40,
-                        color: constant.appPrimaryMaterialColor,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          if (_sixthDigit != null) {
-                            _sixthDigit = null;
-                          }
-                          else if (_fifthDigit != null) {
-                            _fifthDigit = null;
-                          }
-                          else if (_fourthDigit != null) {
-                            _fourthDigit = null;
-                          } else if (_thirdDigit != null) {
-                            _thirdDigit = null;
-                          } else if (_secondDigit != null) {
-                            _secondDigit = null;
-                          } else if (_firstDigit != null) {
-                            _firstDigit = null;
-                          }
-                        });
-                      }),
-                ],
-              ),
+                ),
+                _otpKeyboardInputButton(
+                    label: "0",
+                    onPressed: () {
+                      _setCurrentDigit(0);
+                    }),
+                _otpKeyboardActionButton(
+                    label: new Icon(
+                      Icons.backspace,
+                      size: 40,
+                      color: constant.appPrimaryMaterialColor,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        if (_sixthDigit != null) {
+                          _sixthDigit = null;
+                        } else if (_fifthDigit != null) {
+                          _fifthDigit = null;
+                        } else if (_fourthDigit != null) {
+                          _fourthDigit = null;
+                        } else if (_thirdDigit != null) {
+                          _thirdDigit = null;
+                        } else if (_secondDigit != null) {
+                          _secondDigit = null;
+                        } else if (_firstDigit != null) {
+                          _firstDigit = null;
+                        }
+                      });
+                    }),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -513,14 +534,15 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                     fontSize: 18),
               ),
               onPressed: () {
-                  inputCode = _firstDigit.toString() +
-                      _secondDigit.toString()
-                      + _thirdDigit.toString()
-                      + _fourthDigit.toString() + _fifthDigit.toString() +
-                      _sixthDigit.toString();
-                  print(inputCode);
-                  // _getVisitorData(inputCode,WatchManId);
-                  _getVisitorData(inputCode,WatchManId);
+                inputCode = _firstDigit.toString() +
+                    _secondDigit.toString() +
+                    _thirdDigit.toString() +
+                    _fourthDigit.toString() +
+                    _fifthDigit.toString() +
+                    _sixthDigit.toString();
+                print(inputCode);
+                // _getVisitorData(inputCode,WatchManId);
+                _getVisitorData(inputCode, WatchManId);
               }),
         )
       ],
@@ -528,7 +550,8 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
   }
 
   String entryNo;
-  _getVisitorData(String entryNo,String watchmenId,{String vehicleNo}) async {
+
+  _getVisitorData(String entryNo, String watchmenId, {String vehicleNo}) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -538,26 +561,29 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
           "entryNo": entryNo,
           "watchmanId": watchmenId,
           "vehicleNo": vehicleNo,
-          "deviceType" : Platform.isAndroid ? "Android" : "IOS",
-          "societyId" : societyId
+          "deviceType": Platform.isAndroid ? "Android" : "IOS",
+          "societyId": societyId
         });
         print({
           "entryNo": entryNo,
           "watchmanId": watchmenId,
           "vehicleNo": vehicleNo,
-          "deviceType" : Platform.isAndroid ? "Android" : "IOS",
-          "societyId" : societyId
+          "deviceType": Platform.isAndroid ? "Android" : "IOS",
+          "societyId": societyId
         });
         setState(() {
           isLoading = true;
         });
-        Services.responseHandler(apiName: "watchman/addVisitorEntry",body: formData).then((data) async {
+        Services.responseHandler(
+                apiName: "watchman/addVisitorEntry", body: formData)
+            .then((data) async {
           // // pr.hide();
           print("message");
           print(data.Data);
           print(data.Message);
-          if(data.Message.split(" ")[0] == "Guest" || data.Message == "Visitor Added"){
-            if(data.Data.toString() == "1"){
+          if (data.Message.split(" ")[0] == "Guest" ||
+              data.Message == "Visitor Added") {
+            if (data.Data.toString() == "1") {
               Fluttertoast.showToast(
                   msg: "Guest Left Successfully!!",
                   backgroundColor: Colors.green,
@@ -571,21 +597,19 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                 _fifthDigit = null;
                 _sixthDigit = null;
               });
-
-            }
-            else if(data.Message.split(" ")[0] == "Guest" || data.Data.length > 0) {
+            } else if (data.Message.split(" ")[0] == "Guest" &&
+                data.Data.length > 0) {
               _showVisitorData(data.Data);
               setState(() {
                 _visitordata = data.Data;
                 isLoading = false;
               });
-            }
-            else{
+            } else {
               Fluttertoast.showToast(
-                  msg: "Please enter correct code!!",
-                  backgroundColor: Colors.red,
-                  gravity: ToastGravity.TOP,
-                  textColor: Colors.white,
+                msg: "Please enter correct code!!",
+                backgroundColor: Colors.red,
+                gravity: ToastGravity.TOP,
+                textColor: Colors.white,
               );
               setState(() {
                 _firstDigit = null;
@@ -596,9 +620,8 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                 _sixthDigit = null;
               });
             }
-          }
-          else{
-            if(data.Data.toString() == "1"){
+          } else {
+            if (data.Data.toString() == "1") {
               Fluttertoast.showToast(
                   msg: "Staff Left Successfully!!",
                   backgroundColor: Colors.green,
@@ -612,8 +635,7 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                 _fifthDigit = null;
                 _sixthDigit = null;
               });
-            }
-            else if(data.Data.length == 0) {
+            } else if (data.Data.length == 0) {
               Fluttertoast.showToast(
                   msg: "Please enter correct code!!",
                   backgroundColor: Colors.green,
@@ -627,8 +649,7 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                 _fifthDigit = null;
                 _sixthDigit = null;
               });
-            }
-            else{
+            } else {
               Fluttertoast.showToast(
                   msg: "Staff Added Successfully!!",
                   backgroundColor: Colors.green,
@@ -644,7 +665,6 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
               });
             }
           }
-
         }, onError: (e) {
           // pr.hide();
           showMsg("Something Went Wrong Please Try Again");
@@ -688,16 +708,15 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
     );
   }
 
-  _addVehicleDetailOfGuest(String guestId,String vehicleNo) async {
+  _addVehicleDetailOfGuest(String guestId, String vehicleNo) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         // pr.show();
-        var data = {
-          "guestEntryId": guestId,
-          "vehicleNo":vehicleNo
-        };
-        Services.responseHandler(apiName: "watchman/addGuestVehicle",body: data).then((data) async {
+        var data = {"guestEntryId": guestId, "vehicleNo": vehicleNo};
+        Services.responseHandler(
+                apiName: "watchman/addGuestVehicle", body: data)
+            .then((data) async {
           // pr.hide();
           if (data.Data != null && data.Data.toString() == "1") {
             Fluttertoast.showToast(
@@ -722,12 +741,10 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
         });
       } else {
         showMsg("No Internet Connection.");
-
       }
     } on SocketException catch (_) {
       // pr.hide();
       showMsg("No Internet Connection.");
-
     }
   }
 
@@ -747,7 +764,8 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ClipOval(
-                    child: data[0]["guestImage"] != "" && data[0]["guestImage"] != null
+                    child: data[0]["guestImage"] != "" &&
+                            data[0]["guestImage"] != null
                         ? FadeInImage.assetNetwork(
                             placeholder: 'images/user.png',
                             image: "${IMG_URL + data[0]["guestImage"]}",
@@ -841,7 +859,8 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                           color: Colors.green,
                           onPressed: () {
                             Navigator.pop(context);
-                            _addVehicleDetailOfGuest(data[0]["_id"],txtvehicle.text);
+                            _addVehicleDetailOfGuest(
+                                data[0]["_id"], txtvehicle.text);
                             setState(() {
                               txtvehicle.text = '';
                             });
@@ -959,6 +978,13 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
   //   );
   // }
 
+  List wingclasslist = [];
+  String selectedWingId;
+  String selectedFlatId;
+  String selectedWing;
+  String _FlateNo;
+  List FlatData = [];
+
   showHHMsg(String title, String msg) {
     showDialog(
       context: context,
@@ -980,13 +1006,6 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
       },
     );
   }
-
-  List wingclasslist = [];
-  String selectedWingId;
-  String selectedFlatId;
-  String selectedWing;
-  String _FlateNo;
-  List FlatData = [];
 
   _flatSelectionBottomsheet(BuildContext context) {
     showModalBottomSheet(
@@ -1016,13 +1035,14 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                             if (FlatData.length > 0) {
                               setState(() {
                                 _FlateNo = FlatData[i]["flatNo"];
-                                for(int i=0;i<FlatData.length;i++){
-                                  if(FlatData[i]["flatNo"] == _FlateNo){
+                                for (int i = 0; i < FlatData.length; i++) {
+                                  if (FlatData[i]["flatNo"] == _FlateNo) {
                                     selectedFlatId = FlatData[i]["_id"];
                                   }
                                 }
                               });
-                              sendNotificationToParent(flatId: selectedFlatId,isVoice : false);
+                              sendNotificationToParent(
+                                  flatId: selectedFlatId, isVoice: false);
                               Navigator.pop(context);
                             }
                           },
@@ -1059,7 +1079,7 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
         });
   }
 
-  GetFlatData(String WingId,{bool isVoice,String voiceMessage}) async {
+  GetFlatData(String WingId, {bool isVoice, String voiceMessage}) async {
     try {
       //check Internet Connection
       final result = await InternetAddress.lookup('google.com');
@@ -1068,12 +1088,10 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
         //   // pr.show();
         // });
 
-        var body = {
-          "societyId" : societyId,
-          "wingId" : WingId
-        };
+        var body = {"societyId": societyId, "wingId": WingId};
         FlatData.clear();
-        Services.responseHandler(apiName: "admin/getFlatsOfSociety",body: body).then((data) async {
+        Services.responseHandler(apiName: "admin/getFlatsOfSociety_v1", body: body)
+            .then((data) async {
           print("data.Data");
           // setState(() {
           //   isLoading = false;
@@ -1082,34 +1100,32 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
           if (data.Data.length > 0) {
             setState(() {
               // FlatData = data.Data
-              for(int i=0;i<data.Data.length;i++){
-                if(data.Data[i]["memberIds"].length > 0){
+              for (int i = 0; i < data.Data.length; i++) {
+                if (data.Data[i]["memberIds"].length > 0) {
                   FlatData.add(data.Data[i]);
                 }
               }
             });
             print("flatdata");
             print(FlatData);
-            if(FlatData.length > 0) {
-              if(!isVoice) {
+            if (FlatData.length > 0) {
+              if (!isVoice) {
                 _flatSelectionBottomsheet(context);
-              }
-              else{
-                for(int i=0;i<FlatData.length;i++){
-                  if(FlatData[i]["flatNo"].toString() == voiceMessage){
+              } else {
+                for (int i = 0; i < FlatData.length; i++) {
+                  if (FlatData[i]["flatNo"].toString() == voiceMessage) {
                     selectedFlatId = FlatData[i]["_id"];
                   }
                 }
-                sendNotificationToParent(flatId: selectedFlatId,isVoice : true);
+                sendNotificationToParent(flatId: selectedFlatId, isVoice: true);
               }
             }
           } else {
-          Fluttertoast.showToast(
-          msg: "No Flat Member Found",
-          backgroundColor: Colors.red,
-          gravity: ToastGravity.TOP,
-          textColor: Colors.white);
-
+            Fluttertoast.showToast(
+                msg: "No Flat Member Found",
+                backgroundColor: Colors.red,
+                gravity: ToastGravity.TOP,
+                textColor: Colors.white);
           }
         }, onError: (e) {
           setState(() {
@@ -1128,7 +1144,7 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
     }
   }
 
-  sendNotificationToParent({String flatId,bool isVoice}) async {
+  sendNotificationToParent({String flatId, bool isVoice}) async {
     try {
       //check Internet Connection
       final result = await InternetAddress.lookup('google.com');
@@ -1137,14 +1153,16 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
         //   // pr.show();
         // });
 
-        var data ={
+        var data = {
           "societyId": societyId,
-          "wingId":selectedWingId,
+          "wingId": selectedWingId,
           "flatId": selectedFlatId,
           // "deviceType": Platform.isAndroid ? "Android" : "IOS",
-          "watchmanId" : WatchManId
+          "watchmanId": WatchManId
         };
-        Services.responseHandler(apiName: "watchman/sendNotificationForVisitorEntry",body: data).then((data) async {
+        Services.responseHandler(
+                apiName: "watchman/sendNotificationForVisitorEntry", body: data)
+            .then((data) async {
           setState(() {
             isLoading = false;
           });
@@ -1154,14 +1172,14 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
           if (data.Data.length > 0) {
             setState(() {
               Fluttertoast.showToast(
-                msg: "Video Call Sent!!!",
-                backgroundColor: Colors.green,
-                gravity: ToastGravity.TOP,
-                textColor: Colors.white);
+                  msg: "Video Call Sent!!!",
+                  backgroundColor: Colors.green,
+                  gravity: ToastGravity.TOP,
+                  textColor: Colors.white);
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => FromMemberScreen(),
+                  builder: (context) => FromMemberScreen(fromMemberData: data.Data[0],unknown : true,id:data.Data[0]["EntryId"]),
                 ),
               );
             });
@@ -1194,7 +1212,8 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
 
   var _text = 'Tap the button and start speaking';
   bool spoke = false;
-  speak(String name){
+
+  speak(String name) {
     spoke = true;
     controller.speak("${name}");
   }
@@ -1216,31 +1235,34 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
             print("_text");
             print(_text);
             // bool isVisitorSpoken = false;
-            if(_text.replaceAll(" ", "").toUpperCase().contains("VIDEOCALL") ||
-            _text.replaceAll(" ", "").toUpperCase().contains("AUDIOCALL") ||
-            _text.replaceAll(" ", "").toUpperCase().contains("CALL")) {
+            if (_text.replaceAll(" ", "").toUpperCase().contains("VIDEOCALL") ||
+                _text.replaceAll(" ", "").toUpperCase().contains("AUDIOCALL") ||
+                _text.replaceAll(" ", "").toUpperCase().contains("CALL")) {
               for (int i = 0; i < memberData.length; i++) {
-                if (_text.toUpperCase().replaceAll(" ", "").
-                contains(
-                    memberData[i]["Name"].toString().toUpperCase().replaceAll(
-                        " ", ""))
-                //     || _text.toUpperCase().replaceAll(" ","").
-                // contains(memberData[i]["Name"].toString().split(" ")[1].toUpperCase().replaceAll(" ",""))
-                ) {
-                  speak("call kar raha hu ${memberData[i]["Name"]} ko");
-                  if (_text.replaceAll(" ", "").toUpperCase().contains(
-                      "AUDIOCALL") ||
-                      _text.replaceAll(" ", "").toUpperCase().contains(
-                          "CALL")) {
+                if (_text.toUpperCase().replaceAll(" ", "").contains(
+                        memberData[i]["Name"]
+                            .toString()
+                            .toUpperCase()
+                            .replaceAll(" ", ""))
+                    //     || _text.toUpperCase().replaceAll(" ","").
+                    // contains(memberData[i]["Name"].toString().split(" ")[1].toUpperCase().replaceAll(" ",""))
+                    ) {
+                  speak("call kar rahi hu ${memberData[i]["Name"]} ko");
+                  if (_text
+                          .replaceAll(" ", "")
+                          .toUpperCase()
+                          .contains("AUDIOCALL") ||
+                      _text
+                          .replaceAll(" ", "")
+                          .toUpperCase()
+                          .contains("CALL")) {
                     callingToMemberFromWatchmen(false, memberData[i]);
-                  }
-                  else {
+                  } else {
                     callingToMemberFromWatchmen(true, memberData[i]);
                   }
                 }
               }
-            }
-            else{
+            } else {
               // for(int i=0;i<_visitorList.length;i++){
               //   if(_text.replaceAll(" ", "").toUpperCase().contains("VISITOR")) {
               //     if (_text.replaceAll(" ", "").toUpperCase().contains(
@@ -1255,49 +1277,54 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
               //   }
               // }
 
-                _text = _text.replaceAll(" ", "");
-                if(_text.length == 4 && !_text.toString().contains(new RegExp(r'[A-Z]'))) {
-                  for (int i = 0; i < wingList.length; i++) {
-                    if (_text[0].toUpperCase() == wingList[i]["wingName"]) {
-                      selectedWingId = wingList[i]["_id"];
-                      break;
-                    }
+              _text = _text.replaceAll(" ", "");
+              if (_text.length == 4 &&
+                  !_text.toString().contains(new RegExp(r'[A-Z]'))) {
+                for (int i = 0; i < wingList.length; i++) {
+                  if (_text[0].toUpperCase() == wingList[i]["wingName"]) {
+                    selectedWingId = wingList[i]["_id"];
+                    break;
                   }
-                  print(_text);
-                  print(_text[1] + _text[2] + _text[3]);
-                  GetFlatData(selectedWingId, isVoice: true,
-                      voiceMessage: _text[1] + _text[2] + _text[3]);
                 }
-                if(_text.length == 3 && !_text.toString().contains(new RegExp(r'[A-Z]'))) {
-                  for (int i = 0; i < wingList.length; i++) {
-                    if (_text[0].toUpperCase() == wingList[i]["wingName"].toString().toUpperCase()) {
-                      selectedWingId = wingList[i]["_id"];
-                      break;
-                    }
+                print(_text);
+                print(_text[1] + _text[2] + _text[3]);
+                GetFlatData(selectedWingId,
+                    isVoice: true,
+                    voiceMessage: _text[1] + _text[2] + _text[3]);
+              }
+              if (_text.length == 3 &&
+                  !_text.toString().contains(new RegExp(r'[A-Z]'))) {
+                for (int i = 0; i < wingList.length; i++) {
+                  if (_text[0].toUpperCase() ==
+                      wingList[i]["wingName"].toString().toUpperCase()) {
+                    selectedWingId = wingList[i]["_id"];
+                    break;
                   }
-                  print(_text);
-                  print(_text[1] + _text[2]);
-                  GetFlatData(selectedWingId, isVoice: true,
-                      voiceMessage: (_text[1] + _text[2]).toUpperCase());
                 }
-                else if(_text.length == 6 && !_text.toString().contains(new RegExp(r'[A-Z]'))) {
-                  // inputCode = _firstDigit.toString() +
-                  //     _secondDigit.toString()
-                  //     + _thirdDigit.toString()
-                  //     + _fourthDigit.toString() + _fifthDigit.toString() +
-                  //     _sixthDigit.toString();
-                  // print(inputCode);
-                  // _getVisitorData(inputCode,WatchManId);
-                  setState(() {
-                    _firstDigit = int.parse(_text[0]);
-                    _secondDigit = int.parse(_text[1]);
-                    _thirdDigit = int.parse(_text[2]);
-                    _fourthDigit = int.parse(_text[3]);
-                    _fifthDigit = int.parse(_text[4]);
-                    _sixthDigit = int.parse(_text[5]);
-                  });
-                  _getVisitorData(_text,WatchManId);
-                }
+                print(_text);
+                print(_text[1] + _text[2]);
+                GetFlatData(selectedWingId,
+                    isVoice: true,
+                    voiceMessage: (_text[1] + _text[2]).toUpperCase());
+              } else if (_text.length == 6 &&
+                  !_text.toString().contains(new RegExp(r'[A-Z]'))) {
+                // inputCode = _firstDigit.toString() +
+                //     _secondDigit.toString()
+                //     + _thirdDigit.toString()
+                //     + _fourthDigit.toString() + _fifthDigit.toString() +
+                //     _sixthDigit.toString();
+                // print(inputCode);
+                // _getVisitorData(inputCode,WatchManId);
+                setState(() {
+                  _firstDigit = int.parse(_text[0]);
+                  _secondDigit = int.parse(_text[1]);
+                  _thirdDigit = int.parse(_text[2]);
+                  _fourthDigit = int.parse(_text[3]);
+                  _fifthDigit = int.parse(_text[4]);
+                  _sixthDigit = int.parse(_text[5]);
+                });
+                _getVisitorData(_text, WatchManId);
+              }
             }
           }),
         );
@@ -1309,6 +1336,7 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     print(wingList);
@@ -1330,20 +1358,15 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
                         child: InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/VisitorHistoryList');
-                          },
-                          child: Row(
-                            children: <Widget>[
-                              SizedBox(width: 10),
-                              Icon(Icons.search),
-                              SizedBox(width: 5),
-                              Expanded(
-                                child: Text(
-                                    "Search Visitor",
-                                ),
-                              ),
-                            ],
+                          child:
+                          Center(
+                            child: SingleChildScrollView(
+                              child: Text("".toUpperCase(),
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold)),
+                            ),
                           ),
                         ),
                         height: 45,
@@ -1525,6 +1548,12 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
               Padding(padding: EdgeInsets.only(top: 25)),
               _getOtpKeyboard,
               Padding(padding: EdgeInsets.only(top: 2)),
+              _firstDigit!=null
+                  && _secondDigit!=null
+                  && _thirdDigit!=null
+                  && _fourthDigit!=null
+                  && _fifthDigit!=null
+                  && _sixthDigit!=null ? _VerifyButton : Container(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -1537,7 +1566,8 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                           child: Text(
                             "Select Wing",
                             style: TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
@@ -1549,62 +1579,62 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                             decoration: BoxDecoration(
                                 border: Border.all(width: 1),
                                 borderRadius:
-                                BorderRadius.all(Radius.circular(6.0))),
+                                    BorderRadius.all(Radius.circular(6.0))),
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8.0),
                               child: DropdownButtonHideUnderline(
                                   child: DropdownButton<dynamic>(
-                                    icon: Icon(
-                                      Icons.chevron_right,
-                                      size: 20,
-                                    ),
-                                    hint: wingList != null &&
+                                icon: Icon(
+                                  Icons.chevron_right,
+                                  size: 20,
+                                ),
+                                hint: wingList != null &&
                                         wingList != "" &&
                                         wingList.length > 0
-                                        ? Text("Select Wing",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    )
-                                        : Text(
-                                      "Wing Not Found",
-                                      style: TextStyle(fontSize: 14),
-                                    ),
-                                    value:selectedWing,
-                                    onChanged: (val) {
-                                      selectedWing = val;
-                                      for(int i=0;i<wingList.length;i++){
-                                        if(val == wingList[i]["wingName"]){
-                                          selectedWingId = wingList[i]["_id"];
-                                          break;
-                                        }
-                                      }
-                                      // Fluttertoast.showToast(
-                                      //     msg: "Coming Soon!!!",
-                                      //     backgroundColor: Colors.red,
-                                      //     gravity: ToastGravity.TOP,
-                                      //     textColor: Colors.white);
-                                      print("selectedWingId");
-                                      print(selectedWingId);
-                                      GetFlatData(selectedWingId,isVoice: false);
-                                    },
-                                    items: wingList.map((dynamic val) {
-                                      return new DropdownMenuItem<dynamic>(
-                                        value: val["wingName"],
-                                        child: Text(
-                                          val["wingName"],
-                                          style: TextStyle(color: Colors.black),
+                                    ? Text(
+                                        "Select Wing",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
                                         ),
-                                      );
-                                    }).toList(),
-                                  )),
+                                      )
+                                    : Text(
+                                        "Wing Not Found",
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                value: selectedWing,
+                                onChanged: (val) {
+                                  selectedWing = val;
+                                  for (int i = 0; i < wingList.length; i++) {
+                                    if (val == wingList[i]["wingName"]) {
+                                      selectedWingId = wingList[i]["_id"];
+                                      break;
+                                    }
+                                  }
+                                  // Fluttertoast.showToast(
+                                  //     msg: "Coming Soon!!!",
+                                  //     backgroundColor: Colors.red,
+                                  //     gravity: ToastGravity.TOP,
+                                  //     textColor: Colors.white);
+                                  print("selectedWingId");
+                                  print(selectedWingId);
+                                  GetFlatData(selectedWingId, isVoice: false);
+                                },
+                                items: wingList.map((dynamic val) {
+                                  return new DropdownMenuItem<dynamic>(
+                                    value: val["wingName"],
+                                    child: Text(
+                                      val["wingName"],
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  );
+                                }).toList(),
+                              )),
                             ),
                           ),
                         ),
                       ],
                     ),
-
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1619,7 +1649,8 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                       ),
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(8.0)),
                             border: Border.all(color: Colors.black)),
                         width: 120,
                         height: 40,
@@ -1630,11 +1661,12 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                               Padding(
                                 padding: const EdgeInsets.only(left: 8.0),
                                 child: Text(
-                                  _FlateNo == "" || _FlateNo== null
+                                  _FlateNo == "" || _FlateNo == null
                                       ? 'Flat No'
                                       : _FlateNo,
                                   style: TextStyle(
-                                      fontWeight: FontWeight.w600, fontSize: 14),
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14),
                                 ),
                               ),
                               Icon(
@@ -1653,31 +1685,29 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
           ),
         ),
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom:8.0),
-        child: SizedBox(
-          child: AvatarGlow(
-            animate: _isListening,
-            glowColor: Theme.of(context).primaryColor,
-            endRadius: 25.0,
-            duration: const Duration(milliseconds: 2000),
-            repeatPauseDuration: const Duration(milliseconds: 100),
-            repeat: true,
-            child: FloatingActionButton(
-              heroTag: "",
-              onPressed: _listen,
-              child: Icon(
-                _isListening ? Icons.mic : Icons.mic_none,
-              ),
-            ),
-          ),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton: Padding(
+      //   padding: const EdgeInsets.only(bottom: 8.0),
+      //   child: SizedBox(
+      //     child: AvatarGlow(
+      //       animate: _isListening,
+      //       glowColor: Theme.of(context).primaryColor,
+      //       endRadius: 25.0,
+      //       duration: const Duration(milliseconds: 2000),
+      //       repeatPauseDuration: const Duration(milliseconds: 100),
+      //       repeat: true,
+      //       child: FloatingActionButton(
+      //         heroTag: "",
+      //         onPressed: _listen,
+      //         child: Icon(
+      //           _isListening ? Icons.mic : Icons.mic_none,
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
-
-
 
   // Returns "Otp custom text field"
   Widget _otpTextField(int digit) {
@@ -1753,19 +1783,20 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
   // Current digit
   void _setCurrentDigit(int i) {
     setState(() {
-      if(_firstDigit != null &&
+      if (_firstDigit != null &&
           _secondDigit != null &&
           _thirdDigit != null &&
-          _fourthDigit != null  &&
+          _fourthDigit != null &&
           _fifthDigit != null &&
-          _sixthDigit != null
-      ) {
-        _getVisitorData(_firstDigit.toString()
-            + _secondDigit.toString()
-            + _thirdDigit.toString()
-            + _fourthDigit.toString()
-            + _fifthDigit.toString()
-            + _sixthDigit.toString(), WatchManId);
+          _sixthDigit != null) {
+        _getVisitorData(
+            _firstDigit.toString() +
+                _secondDigit.toString() +
+                _thirdDigit.toString() +
+                _fourthDigit.toString() +
+                _fifthDigit.toString() +
+                _sixthDigit.toString(),
+            WatchManId);
       }
       _currentDigit = i;
       if (_firstDigit == null) {
@@ -1776,7 +1807,7 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
         _thirdDigit = _currentDigit;
       } else if (_fourthDigit == null) {
         _fourthDigit = _currentDigit;
-      }else if (_fifthDigit == null) {
+      } else if (_fifthDigit == null) {
         _fifthDigit = _currentDigit;
       } else if (_sixthDigit == null) {
         _sixthDigit = _currentDigit;

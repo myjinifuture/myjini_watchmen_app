@@ -50,6 +50,7 @@ class _StaffComponentState extends State<StaffComponent> {
   getLocalData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     societyId = prefs.getString(Session.SocietyId);
+    allWingsAndFlats();
   }
 
   showMsg(String msg, {String title = 'MYJINI'}) {
@@ -75,53 +76,53 @@ class _StaffComponentState extends State<StaffComponent> {
 
   bool scanned = false;
 
-  _addStaffDetails(String staffId, String entryNo) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // pr.show();
-        var data = {
-          "staffId": staffId,
-          "entryNo": entryNo,
-          "societyId": societyId,
-          "type" : 0,
-        };
-        Services.responseHandler(
-                apiName: "watchman/addStaffEntryNo", body: data)
-            .then((data) async {
-              print(data.Message);
-          // pr.hide();
-          if (data.Data != null && data.Data == 1) {
-            setState(() {
-              scanned = true;
-            });
-            Fluttertoast.showToast(
-                msg: "Staff Mapped Successfully!!",
-                backgroundColor: Colors.green,
-                gravity: ToastGravity.TOP,
-                textColor: Colors.white);
-            // ignore: unnecessary_statements
-            widget.staffAdded();
-          } else {
-            //showMsg("Data Not Found");
-            Fluttertoast.showToast(
-                msg: "This Card already exists!!",
-                backgroundColor: Colors.red,
-                gravity: ToastGravity.TOP,
-                textColor: Colors.white);
-          }
-        }, onError: (e) {
-          // pr.hide();
-          showMsg("Something Went Wrong Please Try Again");
-        });
-      } else {
+    _addStaffDetails(String staffId, String entryNo) async {
+      try {
+        final result = await InternetAddress.lookup('google.com');
+        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+          // pr.show();
+          var data = {
+            "staffId": staffId,
+            "entryNo": entryNo,
+            "societyId": societyId,
+            "type" : 0,
+          };
+          Services.responseHandler(
+                  apiName: "watchman/addStaffEntryNo", body: data)
+              .then((data) async {
+                print(data.Message);
+            // pr.hide();
+            if (data.Data != null && data.Data == 1) {
+              setState(() {
+                scanned = true;
+              });
+              Fluttertoast.showToast(
+                  msg: "Staff Mapped Successfully!!",
+                  backgroundColor: Colors.green,
+                  gravity: ToastGravity.TOP,
+                  textColor: Colors.white);
+              // ignore: unnecessary_statements
+              widget.staffAdded();
+            } else {
+              //showMsg("Data Not Found");
+              Fluttertoast.showToast(
+                  msg: "This Card already exists!!",
+                  backgroundColor: Colors.red,
+                  gravity: ToastGravity.TOP,
+                  textColor: Colors.white);
+            }
+          }, onError: (e) {
+            // pr.hide();
+            showMsg("Something Went Wrong Please Try Again");
+          });
+        } else {
+          showMsg("No Internet Connection.");
+        }
+      } on SocketException catch (_) {
+        // pr.hide();
         showMsg("No Internet Connection.");
       }
-    } on SocketException catch (_) {
-      // pr.hide();
-      showMsg("No Internet Connection.");
     }
-  }
 
   Future scan(String staffId) async {
     String defaultType = "Staff";
@@ -151,10 +152,45 @@ class _StaffComponentState extends State<StaffComponent> {
     }
   }
 
+  List<Widget> wingsAndFlats = [];
+
+  allWingsAndFlats(){
+    print("called");
+    wingsAndFlats.clear();
+    for(int j=0;j<widget.staffData["WingData"].length;j++) {
+      for (int i = 0; i < widget.staffData["FlatData"].length; i++) {
+        if (i == widget.staffData["FlatData"].length - 1) {
+          wingsAndFlats.add(Text(
+            "${widget.staffData["WingData"][j]["wingName"]}-${widget
+                .staffData["FlatData"][i]["flatNo"]}",
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[600],
+            ),
+          ),);
+        }
+        else {
+          wingsAndFlats.add(Text(
+            "${widget.staffData["WingData"][j]["wingName"]}-${widget
+                .staffData["FlatData"][i]["flatNo"]}" + ",",
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[600],
+            ),
+          ));
+        }
+      }
+    }
+    return wingsAndFlats;
+  }
+
   @override
   Widget build(BuildContext context) {
+    allWingsAndFlats();
     print("widget.staffData");
-    print(widget.staffData);
+    print(widget.staffData["WingData"]);
     return AnimationConfiguration.staggeredList(
       position: widget.index,
       duration: const Duration(milliseconds: 450),
@@ -172,7 +208,7 @@ class _StaffComponentState extends State<StaffComponent> {
                           widget.staffData["staffImage"] != null
                       ? FadeInImage.assetNetwork(
                           placeholder: '',
-                          image: "http://smartsociety.itfuturz.com/" +
+                          image: "${constant.IMG_URL}" +
                               "${widget.staffData["staffImage"]}",
                           width: 60,
                           height: 60,
@@ -217,6 +253,21 @@ class _StaffComponentState extends State<StaffComponent> {
                               fontSize: 13,
                               color: Colors.grey),
                         ),
+                        widget.staffData["WingData"].length != 0 ?
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: wingsAndFlats,
+                          ),
+                        ):Container(),
+                        // widget.staffData["WingData"].length != 0 ?Text(
+                        //   "${widget.staffData["WingData"][0]["wingName"]}",
+                        //   style: TextStyle(
+                        //     fontSize: 13,
+                        //     fontWeight: FontWeight.w600,
+                        //     color: Colors.grey[600],
+                        //   ),
+                        // ):Container(),
                       ],
                     ),
                   ),
