@@ -286,7 +286,7 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
                   color: Colors.grey[200],
                   onPressed: () {
                     // Get.back();
-                    Navigator.pop(context);
+                    // Navigator.pop(context);
                     Navigator.pop(context);
                   },
                   child: Text( "OK",
