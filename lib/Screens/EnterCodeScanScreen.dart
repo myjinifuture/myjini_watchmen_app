@@ -1041,9 +1041,7 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                                   }
                                 }
                               });
-                              sendNotificationToParent(
-                                  flatId: selectedFlatId, isVoice: false);
-                              Navigator.pop(context);
+                              audioCallOrVideoCall("Please select Audio Call or Video Call");
                             }
                           },
                           child: Card(
@@ -1144,7 +1142,42 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
     }
   }
 
-  sendNotificationToParent({String flatId, bool isVoice}) async {
+  void audioCallOrVideoCall(String msg) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text("MYJINI"),
+          content: new Text(msg),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Video Call",
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w600)),
+              onPressed: () {
+sendNotificationToParent(
+                                  flatId: selectedFlatId, isVoice: false,isAudioCall : false);
+                              Navigator.pop(context);
+                              },
+            ),
+            new FlatButton(
+              child: new Text("Audio Call",
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w600)),
+              onPressed: () {
+        sendNotificationToParent(
+        flatId: selectedFlatId, isVoice: false,isAudioCall : true);
+        Navigator.pop(context);
+        },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  sendNotificationToParent({String flatId, bool isVoice,bool isAudioCall}) async {
     try {
       //check Internet Connection
       final result = await InternetAddress.lookup('google.com');
@@ -1158,7 +1191,8 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
           "wingId": selectedWingId,
           "flatId": selectedFlatId,
           // "deviceType": Platform.isAndroid ? "Android" : "IOS",
-          "watchmanId": WatchManId
+          "watchmanId": WatchManId,
+          "isAudioCall" : isAudioCall
         };
         Services.responseHandler(
                 apiName: "watchman/sendNotificationForVisitorEntry", body: data)
@@ -1172,7 +1206,7 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
           if (data.Data.length > 0) {
             setState(() {
               Fluttertoast.showToast(
-                  msg: "Video Call Sent!!!",
+                  msg: "Call Sent!!!",
                   backgroundColor: Colors.green,
                   gravity: ToastGravity.TOP,
                   textColor: Colors.white);

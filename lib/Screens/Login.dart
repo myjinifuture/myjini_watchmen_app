@@ -398,17 +398,17 @@ class _LoginState extends State<Login> {
                         }
                         else if(txtMobileNo.text != ''){
                           print(selectedStaffId);
-                          // checkLogin(selectedStaffId);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => OTP(
-                                  mobileNo: txtMobileNo.text.toString(),
-                                  onSuccess: () {
-                                    checkLogin(selectedStaffId);
-                                  },
-                                ),
-                              ));
+                          checkLogin(selectedStaffId);
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //       builder: (context) => OTP(
+                          //         mobileNo: txtMobileNo.text.toString(),
+                          //         onSuccess: () {
+                          //           checkLogin(selectedStaffId);
+                          //         },
+                          //       ),
+                          //     ));
                         }
                         else{
                           Fluttertoast.showToast(

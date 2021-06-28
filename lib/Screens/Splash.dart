@@ -13,7 +13,7 @@ class Splash extends StatefulWidget {
 class _SplashState extends State<Splash> {
   @override
   void initState() {
-    Timer(Duration(seconds: 3), () async {
+    Timer(Duration(seconds: 1), () async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String MemberId = prefs.getString(constant.Session.MemberId);
       String Role = prefs.getString(constant.Session.Role);
@@ -21,9 +21,9 @@ class _SplashState extends State<Splash> {
       FirebaseFirestore.instance.collection("DYNAMIC-URL-MYJINI-MEMBER-APP")
           .get()
           .then((value) {
-        // constant.NODE_API = "https://myjini.herokuapp.com/";
-        constant.NODE_API = "${value.docs[0]["DYNAMIC-URL-MYJINI-MEMBER-APP"]}";
-        constant.IMG_URL = "${value.docs[0]["DYNAMIC-URL-MYJINI-MEMBER-APP"]}";
+        constant.NODE_API = "https://myjini.herokuapp.com/";
+        // constant.NODE_API = "${value.docs[0]["DYNAMIC-URL-MYJINI-MEMBER-APP"]}";
+        // constant.IMG_URL = "${value.docs[0]["DYNAMIC-URL-MYJINI-MEMBER-APP"]}";
         print("constant.NODE_API");
         print(constant.NODE_API);
         if (MemberId != null && MemberId != "")

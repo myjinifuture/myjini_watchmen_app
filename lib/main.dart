@@ -137,6 +137,7 @@ class _MyAppState extends State<MyApp> {
         if(data["CallStatus"] == "Accepted") {
           Get.to(JoinPage(
             unknownVisitorEntryId: data["EntryId"],
+              isAudioCall : data["isAudioCall"]
           ),
           );
         }

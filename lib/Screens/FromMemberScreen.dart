@@ -11,16 +11,15 @@ class FromMemberScreen extends StatefulWidget {
 
   Map fromMemberData = {};
   String rejected="",CallingType="",id="";
-  bool unknown = false;
+  bool unknown = false,isAudioCall = false;
 
-  FromMemberScreen({this.fromMemberData,this.rejected,this.CallingType,this.unknown,this.id});
+  FromMemberScreen({this.fromMemberData,this.rejected,this.CallingType,this.unknown,this.id,this.isAudioCall});
 
   @override
   _FromMemberScreenState createState() => _FromMemberScreenState();
 }
 
 class _FromMemberScreenState extends State<FromMemberScreen> {
-
 
   Duration _duration = new Duration();
   Duration _position = new Duration();

@@ -15,13 +15,14 @@ class JoinPage extends StatefulWidget {
   Map data;
   String CallingId;
   String unknownVisitorEntryId = "";
+  bool isAudioCall = false;
 
   JoinPage(
       {this.voicecall,
       this.entryIdWhileGuestEntry,
       this.data,
       this.CallingId,
-      this.unknownVisitorEntryId});
+      this.unknownVisitorEntryId,this.isAudioCall});
 
   @override
   _JoinPageState createState() => _JoinPageState();
@@ -94,7 +95,7 @@ class _JoinPageState extends State<JoinPage> {
 
   Future<void> _initAgoraRtcEngine() async {
     await AgoraRtcEngine.create(APP_ID);
-    widget.voicecall == "VoiceCall"
+    widget.voicecall == "VoiceCall" || widget.isAudioCall
         ? await AgoraRtcEngine.disableVideo()
         : await AgoraRtcEngine.enableVideo();
     //await AgoraRtcEngine.muteLocalAudioStream(true);

@@ -108,6 +108,7 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
           Get.to(
             JoinPage(
               unknownVisitorEntryId: data["EntryId"],
+                isAudioCall : data["isAudioCall"]
             ),
           );
         } else {
@@ -389,9 +390,6 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
   bool spoke = false;
   @override
   void initState() {
-    _speech = stt.SpeechToText();
-    controller.init();
-    initOneSignalNotification();
     _getLocaldata();
     try {
       versionCheck(context);
@@ -1167,6 +1165,9 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
     WatchManId = prefs.getString(constant.Session.MemberId);
     societyId = prefs.getString(constant.Session.SocietyId);
     mobileNo = prefs.getString(constant.Session.mobileNo);
+    _speech = stt.SpeechToText();
+    controller.init();
+    initOneSignalNotification();
     getWingsId(societyId);
     _getDirectoryListing(societyId);
     _getInsideVisitor(societyId);
