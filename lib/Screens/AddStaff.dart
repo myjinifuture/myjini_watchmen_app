@@ -1524,7 +1524,16 @@ class _AddStaffState extends State<AddStaff> {
             color: constant.appPrimaryMaterialColor,
             minWidth: MediaQuery.of(context).size.width - 20,
             onPressed: () {
-              _SaveStaff();
+              if(image == null){
+                Fluttertoast.showToast(
+                    msg: "Please select Image of Staff",
+                    backgroundColor: Colors.red,
+                    gravity: ToastGravity.TOP,
+                    textColor: Colors.white);
+              }
+              else{
+                _SaveStaff();
+              }
             },
             child: Text(
               "Add Staff",

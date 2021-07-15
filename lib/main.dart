@@ -50,6 +50,7 @@ import 'Screens/FromMemberScreen.dart';
 import 'Screens/RulesAndRegulations.dart';
 import 'Screens/StaffList.dart';
 import 'Screens/amcList.dart';
+import 'Screens/directoryListing.dart';
 import 'Screens/watchmanVisitorList.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -267,6 +268,7 @@ class _MyAppState extends State<MyApp> {
           '/VisitorHistoryList': (context) => VisitorHistoryList(),
           '/StaffInOut': (context) => StaffInOut(),
           '/SOSpage': (context) => SOSpage(),
+          '/memberDirectory': (context) => DirecotryScreen(),
         },
         theme: ThemeData(
           fontFamily: 'Montserrat',

@@ -2082,11 +2082,13 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
                                       .toUpperCase(),
                                   style: TextStyle(
                                       // fontWeight: FontWeight.bold,
-                                      fontSize: 11))
+                                      fontSize: 11,
+                                  ),
+                              ),
                             ],
                           ),
                           onTap: () {
-                            Navigator.pushNamed(context, '/CallSocietyMembers');
+                            Navigator.pushNamed(context, '/memberDirectory');
                           },
                         ),
                       ),

@@ -7,6 +7,7 @@ import 'package:easy_permission_validator/easy_permission_validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_text_to_speech/flutter_text_to_speech.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -1151,25 +1152,36 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
           content: new Text(msg),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("Video Call",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.w600)),
-              onPressed: () {
-sendNotificationToParent(
-                                  flatId: selectedFlatId, isVoice: false,isAudioCall : false);
-                              Navigator.pop(context);
-                              },
-            ),
-            new FlatButton(
-              child: new Text("Audio Call",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.w600)),
-              onPressed: () {
-        sendNotificationToParent(
-        flatId: selectedFlatId, isVoice: false,isAudioCall : true);
-        Navigator.pop(context);
-        },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.video_call),
+                  onPressed: () {
+                    sendNotificationToParent(
+                        flatId: selectedFlatId, isVoice: false,isAudioCall : false);
+                    Navigator.pop(context);
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.call_end),
+                  onPressed: () {
+                    sendNotificationToParent(
+                        flatId: selectedFlatId, isVoice: false,isAudioCall : true);
+                    Navigator.pop(context);
+                  },
+                ),
+                IconButton(
+                    icon: Icon(Icons.phone),
+                    onPressed: () {
+                      // Sh.Share.share(
+                      //     shareMyAddressContent);
+                      FlutterPhoneDirectCaller.callNumber("7020829599");
+                    }),
+                SizedBox(
+                  width: 50,
+                ),
+              ],
             ),
           ],
         );

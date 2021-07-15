@@ -20,15 +20,25 @@ dependencies:
   flutter:
     sdk: flutter
 
+  google_api_headers:
+    # When depending on this package from a real application you should use:
+    #   google_api_headers: ^x.y.z
+    # See https://dart.dev/tools/pub/dependencies#version-constraints
+    # The example app is bundled with the plugin so we use a path dependency on
+    # the parent directory to use the current plugin's version.
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
   dio: ^3.0.1
+  esys_flutter_share: ^1.0.2
   image_picker: ^0.6.1+1
   shared_preferences: ^0.5.3+4
+  flutter_phone_direct_caller: any
   progress_dialog: ^1.2.0
   flutter_cupertino_date_picker: ^1.0.12
   file_picker: ^1.4.2
+  share: ^0.6.5+4
   avatar_glow: any
   flutter_text_to_speech: any
   cloud_firestore: any
