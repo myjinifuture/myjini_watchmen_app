@@ -247,7 +247,6 @@ class _JoinPageState extends State<JoinPage> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
               onPressed: () {
                 // Navigator.pop(context);
-                // Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
