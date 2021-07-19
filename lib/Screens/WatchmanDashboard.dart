@@ -1086,6 +1086,51 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
     );
   }
 
+  showVisitorImage(String msg,String image, {String title = 'MYJINI'}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: 200,
+          child: AlertDialog(
+            title: new Text(title),
+            content: Column(
+              children: [
+                new Container(
+                    width: 190.0,
+                    height: 190.0,
+                    decoration: new BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: new DecorationImage(
+                            fit: BoxFit.fill,
+                            image: new NetworkImage(
+                                "${constant.IMG_URL}" + image)
+                        )
+                    )),
+                Text(msg),
+              ],
+            ),
+            actions: <Widget>[
+              // usually buttons at the bottom of the dialog
+              new FlatButton(
+                child: new Text("Yes"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              new FlatButton(
+                child: new Text("No"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   // Future scan() async {
   //   try {
   //     String barcode = await BarcodeScanner.scan();
@@ -1174,16 +1219,68 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
     initPlatformState();
   }
 
+  imagePresent(String entryNo, String societyId,List<String> entryData) async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        print("called");
+        // pr.show();
+        var data = {
+          "entryNo":entryNo.toString(),
+          "societyId":societyId
+        };
+        print("data");
+        print(data);
+        Services.responseHandler(
+            apiName: "watchman/getEnterNoImage", body: data)
+            .then((data) async {
+          // pr.hide();
+          if (data.Data != null && data.Data.length > 0) {
+           // showVisitorImage("Allow Visitor to Enter",data.Data[0]["staffImage"]);
+             if (entryData[0].split("-")[0] == "GUEST")
+              _getVisitorData(entryData[0].split("-")[1], WatchManId, true);
+             else
+               _getVisitorData(entryData[0], WatchManId, false);
+             Fluttertoast.showToast(
+                 msg: "Guest Added Successfully!!",
+                 backgroundColor: Colors.green,
+                 gravity: ToastGravity.TOP,
+                 textColor: Colors.white);
+          } else {
+            //showMsg("Data Not Found");
+          }
+        }, onError: (e) {
+          // pr.hide();
+          showMsg("Something Went Wrong Please Try Again");
+        });
+      } else {
+        showMsg("No Internet Connection.");
+      }
+    } on SocketException catch (_) {
+      // pr.hide();
+      showMsg("No Internet Connection.");
+    }
+  }
+
   Future scan() async {
     String defaultType = "Visitor";
     try {
       String barcode = await BarcodeScanner.scan();
       print(barcode);
       var data = barcode.split(",");
+      print("data3e3");
+      print(data);
       if (data[0].split("-")[0] == "GUEST")
         _getVisitorData(data[0].split("-")[1], WatchManId, true);
       else
         _getVisitorData(data[0], WatchManId, false);
+      Fluttertoast.showToast(
+          msg: "Guest Added Successfully!!",
+          backgroundColor: Colors.green,
+          gravity: ToastGravity.TOP,
+          textColor: Colors.white);
+      //imagePresent(data[0],societyId,data);
+
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
         setState(() {

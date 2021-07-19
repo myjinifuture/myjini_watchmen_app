@@ -14,30 +14,35 @@ class Services {
 
   static Future<ResponseDataClass> responseHandler(
       {@required apiName, body}) async {
-    String url = NODE_API + "$apiName";
+    String url = "";
+    //if(url2!=null){
+     // url = NODE_API_2 + "$apiName";
+   // }
+    //else{
+      url = NODE_API + "$apiName";
+    //}
     var header = Options(
       headers: {
         "authorization": "$Access_Token" // set content-length
       },
     );
     var response;
+    print(body);
+    print(apiName);
     try {
       if (body == null) {
         response = await dio.post(url, options: header);
       } else {
         response = await dio.post(url, data: body, options: header);
       }
-      print(body);
-      print(apiName);
       if (response.statusCode == 200) {
         ResponseDataClass responseData = new ResponseDataClass(
             Message: "No Data", IsSuccess: false, Data: "");
         var data = response.data;
-        print(response.data["Data"]);
         responseData.Message = data["Message"];
         responseData.IsSuccess = data["IsSuccess"];
         responseData.Data = data["Data"];
-
+        print(responseData.Data);
         return responseData;
       } else {
         print("error ->" + response.data.toString());

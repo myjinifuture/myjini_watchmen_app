@@ -21,7 +21,8 @@ class _SplashState extends State<Splash> {
       FirebaseFirestore.instance.collection("DYNAMIC-URL-MYJINI-MEMBER-APP")
           .get()
           .then((value) {
-        // constant.NODE_API = "https://myjini.herokuapp.com/";
+        //constant.NODE_API = "https://myjini.herokuapp.com/";
+        //constant.NODE_API_2 = "https://myjini2.herokuapp.com/";
         constant.NODE_API = "http://13.127.1.141/";
         constant.IMG_URL = "http://13.127.1.141/";
         // constant.NODE_API = "${value.docs[0]["DYNAMIC-URL-MYJINI-MEMBER-APP"]}";

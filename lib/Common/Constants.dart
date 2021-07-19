@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 const String API_URL = "http://mywatcher.itfuturz.com/api/AppAPI/";
  String IMG_URL = "";
  String NODE_API = "";
+String NODE_API_2 = "";
 const Inr_Rupee = "₹";
 const String Access_Token = "Mjdjhcbj43jkmsijkmjJKJKJoijlkmlkjo-HfdkvjDJjMoikjnNJn-JNFhukmk";
 const Color appcolor = Color.fromRGBO(0, 171, 199, 1);
