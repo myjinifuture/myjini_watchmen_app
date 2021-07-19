@@ -279,7 +279,6 @@ class _JoinPageState extends State<JoinPage> {
   }
 
   void _onCallEnd(BuildContext context) {
-    // Navigator.pop(context);
     Navigator.of(context).pushNamedAndRemoveUntil(
         '/WatchmanDashboard', (Route<dynamic> route) => false);
   }
