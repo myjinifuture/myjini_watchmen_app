@@ -248,7 +248,6 @@ class _JoinPageState extends State<JoinPage> {
               onPressed: () {
                 // Navigator.pop(context);
                 // Navigator.pop(context);
-                // Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
