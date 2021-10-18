@@ -4,9 +4,7 @@ class ResponseDataClass {
   String Message;
   bool IsSuccess;
   var Data;
-
   ResponseDataClass({this.Message, this.IsSuccess, this.Data});
-
   factory ResponseDataClass.fromJson(Map<String, dynamic> json) {
     return ResponseDataClass(
       Message: json['Message'] as String,

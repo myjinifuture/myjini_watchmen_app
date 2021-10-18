@@ -3,19 +3,14 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:smartsocietystaff/Screens/MemberProfile.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:smartsocietystaff/Common/Constants.dart' as cnst;
-
 class DirectoryMemberComponent extends StatefulWidget {
   var memberData;
-
   int index;
-
   DirectoryMemberComponent(this.memberData, this.index);
-
   @override
   _DirectoryMemberComponentState createState() =>
       _DirectoryMemberComponentState();
 }
-
 class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
   _openWhatsapp(mobile) {
     String whatsAppLink = cnst.whatsAppLink;
@@ -23,7 +18,6 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
     String urlwithmsg = urlwithmobile.replaceAll("#msg", "");
     launch(urlwithmsg);
   }
-
   @override
   Widget build(BuildContext context) {
     return AnimationConfiguration.staggeredList(

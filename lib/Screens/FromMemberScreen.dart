@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -12,9 +13,7 @@ class FromMemberScreen extends StatefulWidget {
   Map fromMemberData = {};
   String rejected="",CallingType="",id="";
   bool unknown = false,isAudioCall = false;
-
   FromMemberScreen({this.fromMemberData,this.rejected,this.CallingType,this.unknown,this.id,this.isAudioCall});
-
   @override
   _FromMemberScreenState createState() => _FromMemberScreenState();
 }
@@ -26,13 +25,19 @@ class _FromMemberScreenState extends State<FromMemberScreen> {
   Duration _slider = new Duration(seconds: 0);
   double durationvalue;
   bool issongplaying = false;
-
   @override
   void initState() {
     print("widget.memberdata");
     print(widget.fromMemberData);
     super.initState();
     _getLocaldata();
+    print("helloDivya460505");
+    print(widget.rejected);
+    if(widget.rejected!=null){
+      backscreen();
+    }
+
+
   }
 
   String WatchManId = "";
@@ -40,7 +45,10 @@ class _FromMemberScreenState extends State<FromMemberScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     WatchManId = prefs.getString(constant.Session.MemberId);
   }
-
+  backscreen()async{
+    Timer(Duration(seconds: 2),()=>  Navigator.of(context).pushNamedAndRemoveUntil(
+        '/WatchmanDashboard', (Route<dynamic> route) => false) );
+  }
   onRejectCall() async {
     try {
       print("widget.fromMemberData");
@@ -79,7 +87,8 @@ class _FromMemberScreenState extends State<FromMemberScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pop(context);
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            '/WatchmanDashboard', (Route<dynamic> route) => false);
       },
       child: Scaffold(
           body: Padding(
@@ -102,7 +111,7 @@ class _FromMemberScreenState extends State<FromMemberScreen> {
                       SizedBox(
                         height: MediaQuery.of(context).size.width*0.05,
                       ),
-                      widget.isAudioCall ? Text("Audio Calling....",
+                      widget.rejected=="Rejected" ? Container() :widget.isAudioCall ? Text("Audio Calling....",
                         style: TextStyle(
                             fontSize: 20,
                         ),
@@ -115,7 +124,7 @@ class _FromMemberScreenState extends State<FromMemberScreen> {
                       SizedBox(
                         height: MediaQuery.of(context).size.height*0.1,
                       ),
-                          widget.fromMemberData == null
+                         /* widget.fromMemberData == null
                           ? Container(
                           width: MediaQuery.of(context).size.width*0.3,
                           height: MediaQuery.of(context).size.height*0.3,
@@ -134,7 +143,7 @@ class _FromMemberScreenState extends State<FromMemberScreen> {
                                "${widget.fromMemberData["Image"]}",
                            width: 200,
                            height: 200,
-                           fit: BoxFit.fill),
+                           fit: BoxFit.fill),*/
                       SizedBox(
                         height: MediaQuery.of(context).size.height*0.01,
                       ),

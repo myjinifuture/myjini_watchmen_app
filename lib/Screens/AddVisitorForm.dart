@@ -311,6 +311,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         if(otherAmenitiesSelected){
+          print("divyan Sondagar");
           if (resultText.text != "" && mobilenotext.text.length  == 10) {
             pr.show();
             SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -387,7 +388,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                   "guestType": _selectedvisitorId.toString(),
                   // doubt will ask to monil
                   "purposeId": purposeSelectedId,
-                  "vehicleNo": vehiclenotext.text,
+                  "vehicleNo": vehicleNumber,
                   // "wingId": selectedWingId,
                   // "flatId": selectedFlatId,
                   "guestImage": (filePath != null && filePath != '')
@@ -438,6 +439,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                 gravity: ToastGravity.TOP);
         }
         else if (flatIdsForBackend.length > 0 ) {
+          print("Nitin Sondagar");
           if (resultText.text != "" && mobilenotext.text != "" && purposeSelected != null) {
             // pr.show();
             SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -490,13 +492,14 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                 print(selectedMemberId);
               }
             }
-            for(int i=0;i<wingList.length;i++){
-              if(selectedWing.toString()==wingList[i]["wingName"].toString()){
-                print("4");
-                selectedWingId = wingList[i]["_id"].toString();
-                print(selectedWingId);
-              }
-            }
+            // for(int i=0;i<wingList.length;i++){
+            //   if(selectedWing.toString()==wingList[i]["wingName"].toString()){
+            //     print("4");
+            //     print("4");
+            //     selectedWingId = wingList[i]["_id"].toString();
+            //     print(selectedWingId);
+            //   }
+            // }
             FormData formData;
                 formData = new FormData.fromMap({
                   "Name": resultText.text,
@@ -511,16 +514,16 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                   "guestType": _selectedvisitorId.toString(),
                   // doubt will ask to monil
                   "purposeId": purposeSelectedId,
-                  "vehicleNo": vehiclenotext.text,
+                  "vehicleNo": vehicleNumber,
                   "allWingFlats" : flatIdsForBackend.toString().replaceAll("[","").replaceAll("]","").replaceAll(" ", ""),
                   // "wingId": selectedWingId,
                   // "flatId": selectedFlatId,
                   "guestImage": (filePath != null && filePath != '')
                       ? await MultipartFile.fromFile(filePath,
                       filename: filename.toString())
-                      : "",
+                      : null,
                   "companyImage": _selectedCompanyLogo == null
-                      ? ""
+                      ? null
                       : _selectedCompanyLogo,
                   "watchmanId": WatchManId,
                   "isMask": mask == true ? "1" : "0",
@@ -543,7 +546,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                   "guestType": _selectedvisitorId.toString(),
                   // doubt will ask to monil
                   "purposeId": purposeSelectedId,
-                  "vehicleNo": vehiclenotext.text,
+                  "vehicleNo": vehicleNumber,
                   "allWingFlats" : flatIdsForBackend.toString().replaceAll("[","").replaceAll("]","").replaceAll(" ", ""),
                   // "wingId": selectedWingId,
                   // "flatId": selectedFlatId,
@@ -578,6 +581,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
               }, onError: (e) {
                 // pr.hide();
                 showMsg("Try Again.");
+                print(e);
               });
           } else
             Fluttertoast.showToast(
@@ -617,8 +621,8 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
               child: new Text("Okay",
                   style: TextStyle(fontWeight: FontWeight.w600)),
               onPressed: () {
-                // Navigator.pushReplacementNamed(context, '/WatchmanDashboard');
-                if(widget.isConfirmed == null){
+                 Navigator.pushReplacementNamed(context, '/WatchmanDashboard');
+              /*  if(widget.isConfirmed == null){
                   Navigator.pop(context);
                   Navigator.pop(context);
                 }
@@ -628,7 +632,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                   Navigator.pop(context);
                   Navigator.pop(context);
                 }
-                // Navigator.push(
+              */  // Navigator.push(
                 //   context,
                 //   MaterialPageRoute(
                 //     builder: (context) => JoinPage(entryIdWhileGuestEntry:entryno ,),
@@ -859,12 +863,18 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         societyId=prefs.getString(Session.SocietyId);
         // wingId=prefs.getString(cnst.Session.WingId);
+        print("Divyan Sondagar460505");
+        print("Divyan Sondagar460505");
+        List wings=[];
+        wings=prefs.getString(Session.WingId).split(",");
+        print(wings.length);
         if(prefs.getString(Session.WingId).length > 0){
           wingId = prefs.getString(Session.WingId).replaceAll("[", "")
               .replaceAll("]", "").replaceAll(" ", "");
         }
         else{
           wingId = prefs.getString(Session.WingId);
+          print(prefs.getString(Session.WingId).length);
         }
         var data = {
           "societyId" : societyId,
@@ -890,7 +900,10 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
                   });
               }
             }
+            print("divyan sondagar");
+            print(flatsToMakeSort.length);
             flatsToMakeSort.sort();
+            print(flatsToMakeSort.length);
             print("flatNumbersAndIds");
             print(flatNumbersAndIds);
             setState(() {
@@ -925,7 +938,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
     }
   }
 
-  getFlatIds() async {
+ /* getFlatIds() async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -972,7 +985,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
     } on SocketException catch (_) {
       showMsg("Something Went Wrong");
     }
-  }
+  }*/
 
   List allFlatMembersId = [];
 
@@ -1647,6 +1660,7 @@ class _AddVisitorFormState extends State<AddVisitorForm> {
               for(int i=0;i<data.Data.length;i++){
                 if(data.Data[i]["memberIds"].length > 0){
                   FlatData.add(data.Data[i]);
+                  print(i);
                 }
               }
             });

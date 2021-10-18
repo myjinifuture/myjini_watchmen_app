@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:smartsocietystaff/Common/Constants.dart' as cnst;
@@ -7,36 +6,27 @@ import 'package:smartsocietystaff/Common/Services.dart';
 import 'package:smartsocietystaff/Component/DirectoryMemberComponent.dart';
 import 'package:smartsocietystaff/Component/LoadingComponent.dart';
 import 'package:smartsocietystaff/Component/NoDataComponent.dart';
-
 class DirectoryMember extends StatefulWidget {
   String wingType, wingId;
-
   DirectoryMember({this.wingType, this.wingId});
-
   @override
   _DirectoryMemberState createState() => _DirectoryMemberState();
 }
-
 class _DirectoryMemberState extends State<DirectoryMember> {
   bool isLoading = false, isFilter = false;
   List memberData = [];
   List filterMemberData = [];
-
   TextEditingController _controller = TextEditingController();
-
   Widget appBarTitle = new Text(
     "Member Directory",
     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
   );
-
   List searchMemberData = new List();
   bool _isSearching = false, isfirst = false;
-
   Icon icon = new Icon(
     Icons.search,
     color: Colors.white,
   );
-
   _getMembers() async {
     try {
       final result = await InternetAddress.lookup('google.com');
@@ -75,12 +65,10 @@ class _DirectoryMemberState extends State<DirectoryMember> {
       });
     }
   }
-
   @override
   void initState() {
     _getMembers();
   }
-
   showMsg(String msg, {String title = 'MYJINI'}) {
     showDialog(
       context: context,
@@ -101,7 +89,6 @@ class _DirectoryMemberState extends State<DirectoryMember> {
       },
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -233,7 +220,6 @@ class _DirectoryMemberState extends State<DirectoryMember> {
             ),
     );
   }
-
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
       title: appBarTitle,
@@ -266,13 +252,11 @@ class _DirectoryMemberState extends State<DirectoryMember> {
       ],
     );
   }
-
   void _handleSearchStart() {
     setState(() {
       _isSearching = true;
     });
   }
-
   void _handleSearchEnd() {
     setState(() {
       this.icon = new Icon(
@@ -289,7 +273,6 @@ class _DirectoryMemberState extends State<DirectoryMember> {
       _controller.clear();
     });
   }
-
   void searchOperation(String searchText) {
     if (_isSearching != null) {
       searchMemberData.clear();
@@ -307,18 +290,14 @@ class _DirectoryMemberState extends State<DirectoryMember> {
     }
   }
 }
-
 class showFilterDailog extends StatefulWidget {
   Function onSelect;
-
   showFilterDailog({this.onSelect});
   @override
   _showFilterDailogState createState() => _showFilterDailogState();
 }
-
 class _showFilterDailogState extends State<showFilterDailog> {
   String _gender;
-
   bool ownerSelect = false, rentedSelect = false, ownedSelect = false;
   @override
   Widget build(BuildContext context) {

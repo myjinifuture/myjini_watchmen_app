@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-
 import 'package:smartsocietystaff/Common/Constants.dart' as cnst;
-
 class ExpenseComponent extends StatefulWidget {
   var expenseData;
   int index;
-
   ExpenseComponent(this.expenseData, this.index);
-
   @override
   _ExpenseComponentState createState() => _ExpenseComponentState();
 }
-
 class _ExpenseComponentState extends State<ExpenseComponent> {
   String setDate(String date) {
     String final_date = "";
@@ -74,7 +69,6 @@ class _ExpenseComponentState extends State<ExpenseComponent> {
         break;
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return AnimationConfiguration.staggeredList(

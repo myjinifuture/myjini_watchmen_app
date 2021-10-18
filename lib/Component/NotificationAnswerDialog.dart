@@ -1,5 +1,6 @@
 import 'dart:io';
-
+import 'package:audioplayers/audioplayers.dart';
+import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smartsocietystaff/Common/Constants.dart' as constant;
@@ -21,12 +22,37 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
   List NoticeData = new List();
   bool isLoading = false;
   String SocietyId;
+  AudioPlayer advancedPlayer;
+  AudioCache audioCache;
+  Duration _duration = new Duration();
+  Duration _position = new Duration();
 
   @override
   void initState() {
+    initPlayer();
     print( widget.data );
-  }
+    if(widget.data["notificationType"] == "UnknownVisitor" || widget.data["NotificationType"] == "InstantWatchmanMessage"){
+      print("divyan");
+    }else{
+      print("hello");
+      setState(() {
+        audioCache.play('CallRinging.mp3');
+      });
 
+    }
+  }
+  void initPlayer() {
+    advancedPlayer = new AudioPlayer();
+    audioCache = new AudioCache(fixedPlayer: advancedPlayer);
+
+    advancedPlayer.durationHandler = (d) => setState(() {
+      _duration = d;
+    });
+
+    advancedPlayer.positionHandler = (p) => setState(() {
+      _position = p;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     print("widget.data");
@@ -160,8 +186,10 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.w600 ) ):widget.VisitorAccepted=="VisitorRejected" ?
                       Text( "Visitor Rejected",
+
                           textAlign: TextAlign.center,
                           style: TextStyle(
+                              color: Colors.red,
                               fontSize: 18, fontWeight: FontWeight.w600 ) ):
                       widget.data["notificationType"] == "UnknownVisitor" || widget.data["NotificationType"] == "InstantWatchmanMessage"? Container() : Text( "Emergency Message",
                           textAlign: TextAlign.center,
@@ -172,6 +200,7 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
                         padding: const EdgeInsets.only( top: 15.0,left: 25 ),
                         child: Text( 'Rejected Dont Let them come inside',
                             style: TextStyle(
+                              color: Colors.red,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600 ) ),
                       ): Padding(
@@ -287,6 +316,7 @@ class _NotificationAnswerDialogState extends State<NotificationAnswerDialog> {
                   onPressed: () {
                     // Get.back();
                     // Navigator.pop(context);
+                    advancedPlayer.stop();
                     Navigator.pop(context);
                   },
                   child: Text( "OK",

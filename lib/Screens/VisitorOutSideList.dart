@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smartsocietystaff/Common/Constants.dart';
 import 'package:smartsocietystaff/Common/Services.dart';
@@ -35,10 +36,13 @@ class _VisitorOutSideListState extends State<VisitorOutSideList> {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var now = new DateTime.now();
+        var formatter = new DateFormat('dd/MM/yyyy');
+        String formattedDate = formatter.format(now);
         var data = {
           "societyId" : societyId,
-          "fromDate" : fromDate,
-          "toDate" : toDate
+          "fromDate" : fromDate==null?formattedDate:fromDate,
+          "toDate" : toDate==null?formattedDate:toDate
         };
         print("data");
         print(data);

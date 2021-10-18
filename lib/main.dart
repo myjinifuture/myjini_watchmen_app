@@ -32,6 +32,7 @@ import 'package:smartsocietystaff/Screens/Login.dart';
 import 'package:smartsocietystaff/Screens/MemberProfile.dart';
 import 'package:smartsocietystaff/Screens/Notice.dart';
 import 'package:smartsocietystaff/Screens/Polling.dart';
+import 'package:smartsocietystaff/Screens/Ringing.dart';
 import 'package:smartsocietystaff/Screens/SOSpage.dart';
 import 'package:smartsocietystaff/Screens/Splash.dart';
 import 'package:smartsocietystaff/Screens/Staff.dart';
@@ -48,6 +49,8 @@ import 'Screens/AddExpense.dart';
 import 'Screens/AddIncome.dart';
 import 'Screens/AddPolling.dart';
 import 'Screens/AddStaff.dart';
+import 'Screens/AppsEventScreen.dart';
+import 'Screens/AppsListScreen.dart';
 import 'Screens/CallSocietyMembers.dart';
 import 'Screens/FromMemberScreen.dart';
 import 'Screens/RulesAndRegulations.dart';
@@ -56,9 +59,7 @@ import 'Screens/amcList.dart';
 import 'Screens/directoryListing.dart';
 import 'Screens/watchmanVisitorList.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 var androidInfo;
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -68,11 +69,10 @@ void main() async {
       OSiOSSettings.autoPrompt: false,
       OSiOSSettings.inAppLaunchUrl: false,
     },
-
   );
+  OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.none);
   runApp(EasyLocalization(child: MyApp()));
 }
-
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
@@ -100,6 +100,7 @@ class _MyAppState extends State<MyApp> {
 
   bool notificationRecieved = false;
   Future<void> initOneSignalNotification() async {
+    print("hello");
     //Remove this method to stop OneSignal Debugging
     OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
     OneSignal.shared.setNotificationReceivedHandler((OSNotification notification) {
@@ -122,9 +123,14 @@ class _MyAppState extends State<MyApp> {
       }
       else if (data["NotificationType"] == 'VisitorRejected') {
         Get.to(NotificationAnswerDialog(data,VisitorAccepted:"VisitorRejected"));
-
+      }
+      else if(data["CallResponseIs"] == 'Ended') {
+        Get.to(FromMemberScreen(rejected: "Rejected",unknown: false,));
       }
       else if(data["CallResponseIs"] == 'Rejected') {
+        Get.to(FromMemberScreen(rejected: "Rejected",unknown: false,));
+      }
+      else if(data["CallStatus"] == 'Rejected'&&data["notificationType"] == 'UnknownVisitor') {
         Get.to(FromMemberScreen(rejected: "Rejected",unknown: false,));
       }
       else if (data["NotificationType"] == 'VisitorAccepted') {
@@ -133,13 +139,22 @@ class _MyAppState extends State<MyApp> {
       else if (data["NotificationType"] == 'VisitorRejected') {
         Get.to(NotificationAnswerDialog(data,VisitorAccepted:"VisitorRejected"));
       }
-      else if(data["NotificationType"] == 'VoiceCall') {
+      else if(data["NotificationType"] == 'VoiceCall'&&data["CallResponseIs"]=="Accepted") {
         Get.to(JoinPage(entryIdWhileGuestEntry: data["CallingId"],voicecall : data["NotificationType"],isAudioCall: true,));        // audioCache.play('Sound.mp3');
       }
-      else if (data["NotificationType"]== 'VideoCalling') {
+      else if (data["NotificationType"]== 'VideoCalling'&&data["CallResponseIs"]=="Accepted") {
         Get.to(JoinPage(entryIdWhileGuestEntry:data["VisitorEntryId"],data: data,CallingId:data["CallingId"]));
       }
-      else if (data["notificationType"] == 'UnknownVisitor') {
+      else if(data["NotificationType"] == 'VoiceCall') {
+        Get.to(Ringing(isAudioCall: true,fromMemberData: data));        // audioCache.play('Sound.mp3');
+      }
+      else if (data["NotificationType"]== 'VideoCalling') {
+        Get.to(Ringing(isAudioCall: false,fromMemberData: data));
+      }
+      else if (data["notificationType"]== 'UnknownVisitor'&&data["CallStatus"] == "Accepted"&&data["isAudioCall"]==true) {
+        Get.to(JoinPage(entryIdWhileGuestEntry: data["EntryId"],voicecall : data["NotificationType"],isAudioCall: true,));
+      }
+      else if (data["NotificationType"] == 'UnknownVisitor'||data["notificationType"] == 'UnknownVisitor') {
         if(data["CallStatus"] == "Accepted") {
           Get.to(JoinPage(
               unknownVisitorEntryId: data["EntryId"],
@@ -196,12 +211,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Future<void> initState() {
-      PermissionHandler().requestPermissions(
+    /*  PermissionHandler().requestPermissions(
         [
           PermissionGroup.phone
         ],
-      );
-    // initOneSignalNotification();
+      );*/
+     initOneSignalNotification();
     _handleSendNotification();
     _firebaseMessaging.requestNotificationPermissions(
         const IosNotificationSettings(sound: true, badge: true, alert: true));
@@ -248,7 +263,7 @@ class _MyAppState extends State<MyApp> {
           Locale('gu', 'IN'),
           Locale('mr', 'IN')
         ],
-        // locale: data.savedLocale,
+        locale: data.savedLocale,
         routes: {
           '/': (context) => Splash(),
           '/Login': (context) => Login(),
@@ -299,6 +314,38 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     appBar: AppBar(title: Text('Device apps demo')),
+  //     body: Center(
+  //       child: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: <Widget>[
+  //           TextButton(
+  //               onPressed: () {
+  //                 Navigator.push(
+  //                   context,
+  //                   MaterialPageRoute<Object>(
+  //                       builder: (BuildContext context) => AppsListScreen()),
+  //                 );
+  //               },
+  //               child: Text('Applications list')),
+  //           TextButton(
+  //               onPressed: () {
+  //                 Navigator.push(
+  //                   context,
+  //                   MaterialPageRoute<Object>(
+  //                       builder: (BuildContext context) => AppsEventsScreen()),
+  //                 );
+  //               },
+  //               child: Text('Applications events'))
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
   showNotification(String title, String body) async {
     var android = new AndroidNotificationDetails(
         'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
@@ -309,3 +356,44 @@ class _MyAppState extends State<MyApp> {
         payload: 'MYJINI');
   }
 }
+
+// import 'package:flutter/material.dart';
+// import 'Screens/AppsEventScreen.dart';
+// import 'Screens/AppsListScreen.dart';
+// void main() => runApp(MaterialApp(home: const ExampleApp()));
+//
+// class ExampleApp extends StatelessWidget {
+//   const ExampleApp();
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Text('Device apps demo')),
+//       body: Center(
+//         child: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           children: <Widget>[
+//             TextButton(
+//                 onPressed: () {
+//                   Navigator.push(
+//                     context,
+//                     MaterialPageRoute<Object>(
+//                         builder: (BuildContext context) => AppsListScreen()),
+//                   );
+//                 },
+//                 child: Text('Applications list')),
+//             TextButton(
+//                 onPressed: () {
+//                   Navigator.push(
+//                     context,
+//                     MaterialPageRoute<Object>(
+//                         builder: (BuildContext context) => AppsEventsScreen()),
+//                   );
+//                 },
+//                 child: Text('Applications events'))
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

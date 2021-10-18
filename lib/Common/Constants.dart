@@ -54,4 +54,5 @@ class Session {
   static const String UserName = "UserName";
   static const String Password = "Password";
   static const String Role = "Role";
+  static const String flateid = "flate";
 }

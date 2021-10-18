@@ -19,6 +19,7 @@ import 'package:smartsocietystaff/Common/Constants.dart';
 import 'package:smartsocietystaff/Common/Services.dart';
 import 'package:smartsocietystaff/Common/join.dart';
 import 'package:smartsocietystaff/Component/masktext.dart';
+import 'package:smartsocietystaff/Screens/SearchVisitorstaff.dart';
 
 import 'FromMemberScreen.dart';
 import 'SOSpage.dart';
@@ -100,6 +101,8 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
     //   appName: 'Easy Permission Validator',
     // );
     // permissionValidator.camera();
+    print("data545");
+    print(widget.data);
   }
 
   String WatchManId;
@@ -618,7 +621,12 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
             .then((data) async {
           // pr.hide();
           if (data.Data != null && data.Data.length > 0) {
-            showVisitorImage("Allow Visitor to Enter",data.Data[0]["staffImage"],entryData);
+            if(data.Data[0].toString().contains("staffImage")){
+              showVisitorImage("Allow Visitor to Enter",data.Data[0]["staffImage"],entryData);
+            }else{
+              showVisitorImage("Allow Visitor to Enter",data.Data[0]["guestImage"],entryData);
+            }
+            
             // if (entryData[0].split("-")[0] == "GUEST")
             //  _getVisitorData(entryData[0].split("-")[1], WatchManId, true);
             // else
@@ -1109,6 +1117,7 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
   List wingclasslist = [];
   String selectedWingId;
   String selectedFlatId;
+  String selectedMobileNo;
   String selectedWing;
   String _FlateNo;
   List FlatData = [];
@@ -1154,8 +1163,6 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                     shrinkWrap: true,
                     itemCount: FlatData.length,
                     itemBuilder: (BuildContext context, int i) {
-                      print("FlatData");
-                      print(FlatData);
                       return Padding(
                         padding: const EdgeInsets.all(6.0),
                         child: InkWell(
@@ -1168,8 +1175,13 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                                     selectedFlatId = FlatData[i]["_id"];
                                   }
                                 }
+                                for(int i=0;i<memberData.length;i++){
+                                  if(memberData[i]["society"]["flatId"] == selectedFlatId){
+                                    selectedMobileNo = memberData[i]["ContactNo"];
+                                  }
+                                }
                               });
-                              audioCallOrVideoCall("Please select Audio Call or Video Call");
+                              audioCallOrVideoCall("Please select Audio Call or Video Call",selectedMobileNo);
                             }
                           },
                           child: Card(
@@ -1270,7 +1282,7 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
     }
   }
 
-  void audioCallOrVideoCall(String msg) {
+  void audioCallOrVideoCall(String msg,String mobileNo) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -1302,13 +1314,15 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                     Navigator.pop(context);
                   },
                 ),
-                IconButton(
+             /*   IconButton(
                     icon: Icon(Icons.phone),
                     onPressed: () {
+                      print("mobileNo");
+                      print(mobileNo);
                       // Sh.Share.share(
                       //     shareMyAddressContent);
-                      FlutterPhoneDirectCaller.callNumber("7020829599");
-                    }),
+                      FlutterPhoneDirectCaller.callNumber(mobileNo);
+                    }),*/
                 SizedBox(
                   width: 50,
                 ),
@@ -1530,7 +1544,151 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
               child: SingleChildScrollView(
                 child: new Column(
                   children: <Widget>[
-                    Padding(padding: EdgeInsets.only(top: 10)),
+                    Padding(padding: EdgeInsets.only(top: 7)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+
+                              child: InkWell(
+                                onTap: (){
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => searchvisitorstaff(),
+                                    ),
+                                  );
+                                },
+                                child:
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text("Search visitor,Staff",
+                                        style: TextStyle(
+                                          color: Colors.black38,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Icon(Icons.search_rounded),
+                                    ),
+
+                                  ],
+                                )
+                              ),
+                              // height: 45,
+                              decoration: BoxDecoration(
+                                 border: Border.all(color: Colors.purple),
+
+                                  color: Colors.grey[100],
+                                  borderRadius:
+                                  BorderRadius.all(Radius.circular(15.0))),
+                            ),
+                          ),
+                        ),
+                        // GestureDetector(
+                        //   child: Column(
+                        //     children: <Widget>[
+                        //       Container(
+                        //         child: Center(
+                        //           child: Icon(Icons.exit_to_app, color: Colors.red),
+                        //         ),
+                        //         decoration: BoxDecoration(
+                        //             color: Colors.red[100],
+                        //             borderRadius:
+                        //                 BorderRadius.all(Radius.circular(80.0))),
+                        //         height: 45,
+                        //         width: 45,
+                        //       ),
+                        //       Text("Logout",
+                        //           style: TextStyle(
+                        //               fontWeight: FontWeight.bold, fontSize: 10))
+                        //     ],
+                        //   ),
+                        //   onTap: () {
+                        //     _showConfirmDialog();
+                        //   },
+                        // ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 15, right: 15),
+                          child: PopupMenuButton<String>(
+                            onSelected: (String value) {
+                              if (value == "Hindi") {
+                                setState(() {
+                                   widget.data.changeLocale(Locale("hi", "IN"));
+                                });
+                              } else if (value == "English") {
+                                setState(() {
+                                  widget.data.changeLocale(Locale("en", "US"));
+                                });
+                              } else if (value == "Gujrati") {
+                                setState(() {
+                                  widget.data.changeLocale(Locale("gu", "IN"));
+                                });
+                              } else if (value == "Marathi") {
+                                setState(() {
+                                  widget.data.changeLocale(Locale("mr", "IN"));
+                                });
+                              }
+                            },
+                            tooltip: "Change Language",
+                            child: Icon(
+                              Icons.more_horiz,
+                              size: 30,
+                              color: constant.appPrimaryMaterialColor,
+                            ),
+                            itemBuilder: (BuildContext context) =>
+                                <PopupMenuEntry<String>>[
+                              const PopupMenuItem<String>(
+                                value: 'Hindi',
+                                child: Text(
+                                  'हिंदी',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                              const PopupMenuItem<String>(
+                                value: 'Gujrati',
+                                child: Text(
+                                  'ગુજરાતી',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                              const PopupMenuItem<String>(
+                                value: 'English',
+                                child: Text(
+                                  'English',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                              const PopupMenuItem<String>(
+                                value: 'Marathi',
+                                child: Text(
+                                  'मराठी',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(padding: EdgeInsets.only(top: 4)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
@@ -1555,7 +1713,7 @@ class _EnterCodeScanScreenState extends State<EnterCodeScanScreen>
                               ),
                               // height: 45,
                               decoration: BoxDecoration(
-                                  color: Colors.grey[100],
+
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(6.0))),
                             ),

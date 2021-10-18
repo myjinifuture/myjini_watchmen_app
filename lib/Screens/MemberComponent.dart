@@ -7,11 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:smartsocietystaff/Common/Constants.dart';
 import 'package:smartsocietystaff/Common/Services.dart';
-
 import 'package:url_launcher/url_launcher.dart';
-
 import 'FromMemberScreen.dart';
-
 class MemberComponent extends StatefulWidget {
   var MemberData;
 

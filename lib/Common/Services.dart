@@ -16,6 +16,8 @@ class Services {
       {@required apiName, body}) async {
     String url = "";
       url = NODE_API + "$apiName";
+      print("===================================url ");
+      print(url);
     var header = Options(
       headers: {
         "authorization": "$Access_Token" // set content-length
@@ -247,7 +249,6 @@ class Services {
     print("GetNotice URL: " + url);
     try {
       Response response = await dio.get(url);
-
       if (response.statusCode == 200) {
         List list = [];
         print("GetNotice Response: " + response.data.toString());
@@ -266,13 +267,11 @@ class Services {
       throw Exception(e);
     }
   }
-
   static Future<SaveDataClass> DeleteNotice(String noticeID) async {
     String url = API_URL + 'DeleteNotice?id=$noticeID';
     print("DeleteNotice URL: " + url);
     try {
       Response response = await dio.get(url);
-
       if (response.statusCode == 200) {
         SaveDataClass saveData = new SaveDataClass(
             Message: 'No Data', IsSuccess: false, IsRecord: false, Data: "");
@@ -281,7 +280,6 @@ class Services {
         saveData.Message = responseData["Message"];
         saveData.IsSuccess = responseData["IsSuccess"];
         saveData.Data = responseData["Data"].toString();
-
         return saveData;
       } else {
         throw Exception("Something Went Wrong");
@@ -291,16 +289,13 @@ class Services {
       throw Exception(e);
     }
   }
-
   static Future<List> getDocument() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String SocietyId = preferences.getString(Session.SocietyId);
-
     String url = API_URL + 'GetDocument?societyId=$SocietyId';
     print("GetDocument URL: " + url);
     try {
       Response response = await dio.get(url);
-
       if (response.statusCode == 200) {
         List list = [];
         print("GetDocument Response: " + response.data.toString());
@@ -319,7 +314,6 @@ class Services {
       throw Exception(e);
     }
   }
-
   static Future<SaveDataClass> DeleteDocument(String id) async {
     String url = API_URL + 'DeleteDocument?id=$id';
     print("DeleteDocument URL: " + url);
@@ -344,7 +338,6 @@ class Services {
       throw Exception(e);
     }
   }
-
   static Future<List> getMembersAllData() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String SocietyId = preferences.getString(Session.SocietyId);

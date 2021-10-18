@@ -28,6 +28,7 @@ class _AddStaffState extends State<AddStaff> {
   File _image;
   String Gender;
   String _FlateNo;
+  bool ispressed = false;
 
   TextEditingController txtName = TextEditingController();
   TextEditingController txtaddress = TextEditingController();
@@ -429,7 +430,7 @@ class _AddStaffState extends State<AddStaff> {
               }
               Fluttertoast.showToast(
                   msg: "Staff Added Successfully!!!",
-                  backgroundColor: Colors.red,
+                  backgroundColor: Colors.green,
                   gravity: ToastGravity.TOP,
                   textColor: Colors.white);
               Navigator.of(context).pushNamedAndRemoveUntil(
@@ -1543,9 +1544,9 @@ class _AddStaffState extends State<AddStaff> {
         child: SizedBox(
           height: 45,
           child: MaterialButton(
-            color: constant.appPrimaryMaterialColor,
+            color: constant.appPrimaryMaterialColor[700],
             minWidth: MediaQuery.of(context).size.width - 20,
-            onPressed: () {
+            onPressed: !ispressed ? () {
               if(_image == null){
                 Fluttertoast.showToast(
                     msg: "Please select Image of Staff",
@@ -1554,9 +1555,12 @@ class _AddStaffState extends State<AddStaff> {
                     textColor: Colors.white);
               }
               else{
+                setState(() {
+                  ispressed = true;
+                });
                 _SaveStaff();
               }
-            },
+            } : null,
             child: Text(
               "Add Staff",
               style: TextStyle(

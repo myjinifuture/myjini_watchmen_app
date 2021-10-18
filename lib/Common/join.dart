@@ -1,11 +1,16 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_rtm/agora_rtm.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smartsocietystaff/Common/Constants.dart';
+import 'package:smartsocietystaff/Common/Services.dart';
 import 'package:smartsocietystaff/Common/settings.dart';
+import 'package:smartsocietystaff/Component/SlideRightRoute.dart';
 import 'package:smartsocietystaff/Screens/AddVisitorForm.dart';
+import 'package:smartsocietystaff/Screens/WatchmanDashboard.dart';
 
 // import 'package:wakelock/wakelock.dart';
 
@@ -27,7 +32,6 @@ class JoinPage extends StatefulWidget {
   @override
   _JoinPageState createState() => _JoinPageState();
 }
-
 class _JoinPageState extends State<JoinPage> {
   static final _users = <int>[];
   bool muted = false;
@@ -35,14 +39,98 @@ class _JoinPageState extends State<JoinPage> {
   bool completed = false;
   bool accepted = false;
   bool loading = true;
-
   @override
   void initState() {
     initialize();
     // TODO: implement initState
     super.initState();
   }
+  onRejectCall() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var data = {
+          "callingId": widget.entryIdWhileGuestEntry==""||widget.entryIdWhileGuestEntry==null?widget.unknownVisitorEntryId:widget.entryIdWhileGuestEntry,
+          "rejectBy": false
+        };
+        Services.responseHandler(apiName: "member/rejectCall", body: data).then(
+                (data) async {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.setString('commonId', widget.entryIdWhileGuestEntry==""||widget.entryIdWhileGuestEntry==null?widget.unknownVisitorEntryId:widget.entryIdWhileGuestEntry);
+              if (data.Data.toString() == '1') {
+                onRejectCall1();
+                print('call declined successfully');
+              /*  Navigator.pushAndRemoveUntil(
+                    context, SlideLeftRoute(page: WatchmanDashboard()), (route) => false);*/
+              } else {
+                // setState(() {
+                //   isLoading = false;
+                // });
+                onRejectCall1();
+               /* Navigator.pushAndRemoveUntil(
+                    context, SlideLeftRoute(page: WatchmanDashboard()), (route) => false);*/
+              }
+            }, onError: (e) {
+          showHHMsg("Something Went Wrong Please Try Again", "");
+        });
+      }
+    } on SocketException catch (_) {
+      showHHMsg("No Internet Connection.", "");
+    }
+  }
+  onRejectCall1() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        var data = {
+          "callingId": widget.entryIdWhileGuestEntry==""||widget.entryIdWhileGuestEntry==null?widget.unknownVisitorEntryId:widget.entryIdWhileGuestEntry,
+          "rejectBy": prefs.getString(Session.MemberId)
+        };
+        Services.responseHandler(apiName: "member/endCall", body: data).then(
+                (data) async {
 
+              if (data.Data.toString() == '1') {
+                print('call declined successfully');
+                Navigator.pushAndRemoveUntil(
+                    context, SlideLeftRoute(page: WatchmanDashboard()), (route) => false);
+              } else {
+                // setState(() {
+                //   isLoading = false;
+                // });
+                Navigator.pushAndRemoveUntil(
+                    context, SlideLeftRoute(page: WatchmanDashboard()), (route) => false);
+              }
+            }, onError: (e) {
+          showHHMsg("Something Went Wrong Please Try Again", "");
+        });
+      }
+    } on SocketException catch (_) {
+      showHHMsg("No Internet Connection.", "");
+    }
+  }
+  showHHMsg(String title, String msg) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text(title),
+          content: new Text(msg),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                ;
+                Navigator.of(context).pop();
+                ;
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
   @override
   void dispose() {
     // clear users
@@ -52,7 +140,6 @@ class _JoinPageState extends State<JoinPage> {
     AgoraRtcEngine.destroy();
     super.dispose();
   }
-
   // static Future<void> SaveVisitor(body) async {
   //   print(body.toString());
   //   String url = API_URL + 'SaveVisitorsV1';
@@ -60,7 +147,6 @@ class _JoinPageState extends State<JoinPage> {
   //   print("SaveVisitorData url : " + url);
   //   print(response.data);
   // }
-
   Future<void> initialize() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     final data = preferences.getString('data');
@@ -167,6 +253,44 @@ class _JoinPageState extends State<JoinPage> {
       ),
     );
   }
+  Widget _viewAudioRow(){
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding:  EdgeInsets.only(top:30.0),
+          child: Center(
+              child:
+              Image.asset('images/Logo.png', width: 90, height: 90)),
+        ),
+        Text(
+          "MYJINI",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+        SizedBox(
+          height: 200,
+        ),
+        /*Text(widget.Callername.toUpperCase(),textScaleFactor: 1.5),
+        Row( // tell monil to send me flatno and wing name also 18 number
+          mainAxisAlignment: MainAxisAlignment.center,
+          children:[
+            new Text(
+              widget.CallerWing,
+              textScaleFactor: 1.5,
+            ),
+            new Text(
+              "-",
+              textScaleFactor: 1.5,
+            ),
+            new Text(
+              widget.CallerFlat,
+              textScaleFactor: 1.5,
+            ),
+          ],
+        ),*/
+        // Text("${}",style: TextStyle(fontSize: 20),),
+      ],
+    );
+  }
 
   // / Video layout wrapper
   Widget _viewRows() {
@@ -237,7 +361,7 @@ class _JoinPageState extends State<JoinPage> {
                 fillColor: Colors.redAccent,
                 padding: const EdgeInsets.all(15.0),
               ),
-              RawMaterialButton(
+              widget.isAudioCall==true?Container():RawMaterialButton(
                 onPressed: _onSwitchCamera,
                 child: Icon(
                   Icons.switch_camera,
@@ -258,6 +382,7 @@ class _JoinPageState extends State<JoinPage> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
               onPressed: () {
                 // Navigator.pop(context);
+                _onCallEnd(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -288,6 +413,7 @@ class _JoinPageState extends State<JoinPage> {
   }
 
   void _onCallEnd(BuildContext context) {
+    onRejectCall();
     Navigator.of(context).pushNamedAndRemoveUntil(
         '/WatchmanDashboard', (Route<dynamic> route) => false);
   }
@@ -306,9 +432,7 @@ class _JoinPageState extends State<JoinPage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () {
-        Navigator.pop(context);
-      },
+      onWillPop: () async=>false,
       child: Scaffold(
         appBar: AppBar(
           title: Text('MYJINI'),
@@ -318,7 +442,7 @@ class _JoinPageState extends State<JoinPage> {
               ? CircularProgressIndicator()
               : Stack(
                   children: <Widget>[
-                    _viewRows(),
+                    widget.isAudioCall!=true ?_viewRows(): _viewAudioRow(),
                     _toolbar(),
                   ],
                 ),

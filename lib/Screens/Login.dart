@@ -137,92 +137,75 @@ class _LoginState extends State<Login> {
     print(identifier);
   }
 
-  checkLogin(String staffId) async {
-    if (txtMobileNo.text != "" &&
-        txtMobileNo.text != null ) {
-      try {
-        final result = await InternetAddress.lookup('google.com');
-        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-          // pr.show();
-          var data = {
-            "mobileNo1" : txtMobileNo.text,
-            // "fcmToken" : fcmToken,
-            "DeviceType" : Platform.isAndroid ? "Android" : "IOS",
-            "IMEI" : uniqueId,
-            // "playerId" : playerId
-          };
-          print("data");
-          print(data);
-          Services.responseHandler(apiName: "watchman/login",body: data).then((data) async {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            if (data.Data != null && data.Data.length > 0) {
-              // pr.hide();
-              await prefs.setString(
-                Session.MemberId,
-                data.Data[0]["_id"].toString(),
-              );
-              await prefs.setString(
-                Session.RoleId,
-                data.Data[0]["RoleId"].toString(),
-              );
-              await prefs.setString(
-                Session.mobileNo,
-                data.Data[0]["ContactNo1"].toString(),
-              );
-
-              await prefs.setString(
-                Session.SocietyId,
-                data.Data[0]["societyId"].toString(),
-              );
-              await prefs.setString(
-                Session.Name,
-                data.Data[0]["Name"].toString(),
-              );
-              await prefs.setString(
-                Session.WingId,
-                data.Data[0]["wingId"].toString(),
-              );
-
-              // await prefs.setString(
-              //   Session.UserName,
-              //   data[0]["UserName"].toString(),
-              // );
-              // await prefs.setString(
-              //   Session.Password,
-              //   data[0]["Password"].toString(),
-              // );
-              // await prefs.setString(
-              //   Session.Role,
-              //   data[0]["Role"].toString(),
-              // );
-              // data[0]["Role"].toString() == "Watchmen"
-              //     ?
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => WatchmanDashboard(societyName : ""),
-                ),
-              );
-              // Navigator.pushReplacementNamed(context, '/WatchmanDashboard');
-                  // : Navigator.pushReplacementNamed(context, '/Dashboard');
-            } else {
-              // pr.hide();
-              showMsg("Invalid login Detail.");
-            }
-          }, onError: (e) {
+  checkLogin(String mobileNo) async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var data = {
+          "mobileNo1" : mobileNo,
+          "DeviceType" : Platform.isAndroid ? "Android" : "IOS",
+          "IMEI" : uniqueId,
+        };
+        print("data");
+        print(data);
+        Services.responseHandler(apiName: "watchman/login",body: data).then((data) async {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          if (data.Data != null && data.Data.length > 0) {
             // pr.hide();
-            print("Error : on Login Call $e");
-            showMsg("Something Went Wrong Please Try Again");
-          });
-        } else {
+            await prefs.setString(
+              Session.MemberId,
+              data.Data[0]["_id"].toString(),
+            );
+            await prefs.setString(
+              Session.societyName,
+              data.Data[0]["SocietyData"][0]["Name"].toString(),
+            );
+            await prefs.setString(
+              Session.RoleId,
+              data.Data[0]["RoleId"].toString(),
+            );
+            await prefs.setString(
+              Session.mobileNo,
+              data.Data[0]["ContactNo1"].toString(),
+            );
+
+            await prefs.setString(
+              Session.SocietyId,
+              data.Data[0]["societyId"].toString(),
+            );
+            await prefs.setString(
+              Session.Name,
+              data.Data[0]["Name"].toString(),
+            );
+            await prefs.setString(
+              Session.WingId,
+              data.Data[0]["wingId"].toString(),
+            );
+            print("divyan Sondagar460505052");
+            print( data.Data[0]["wingId"].toString());
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => WatchmanDashboard(societyName : ""),
+              ),
+            );
+            // Navigator.pushReplacementNamed(context, '/WatchmanDashboard');
+            // : Navigator.pushReplacementNamed(context, '/Dashboard');
+          } else {
+            // pr.hide();
+            showMsg("Invalid login Detail.");
+          }
+        }, onError: (e) {
           // pr.hide();
-          showMsg("No Internet Connection.");
-        }
-      } on SocketException catch (_) {
+          print("Error : on Login Call $e");
+          showMsg("Something Went Wrong Please Try Again");
+        });
+      } else {
+        // pr.hide();
         showMsg("No Internet Connection.");
       }
-    } else {
-      showMsg("Please Fill All Details");
+    } on SocketException catch (_) {
+      showMsg("No Internet Connection.");
     }
   }
 
@@ -398,7 +381,7 @@ class _LoginState extends State<Login> {
                         }
                         else if(txtMobileNo.text != ''){
                           print(selectedStaffId);
-                          checkLogin(selectedStaffId);
+                          checkLogin(txtMobileNo.text);
                           // Navigator.push(
                           //     context,
                           //     MaterialPageRoute(

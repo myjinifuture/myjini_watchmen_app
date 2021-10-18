@@ -12,7 +12,6 @@ class _FlateNoComponentState extends State<FlateNoComponent> {
     return InkWell(
       onTap: (){
       },
-
       child: Padding(
         padding: const EdgeInsets.all(6.0),
         child: Card(

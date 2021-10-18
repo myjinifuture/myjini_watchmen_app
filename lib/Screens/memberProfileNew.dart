@@ -43,13 +43,13 @@ class _MemberProfileState extends State<MemberProfile> {
   void initState() {
     print("memberData");
     print(widget.memberData);
-    if( widget.memberData["FlatData"]["residenceType"].toString()=="0"){
+    if( widget.memberData["FlatData"][0]["residenceType"].toString()=="0"){
       ResidanceType = "Owner";
     }
-    else if( widget.memberData["FlatData"]["residenceType"].toString()=="1"){
+    else if( widget.memberData["FlatData"][0]["residenceType"].toString()=="1"){
       ResidanceType = "Closed";
     }
-    else if( widget.memberData["FlatData"]["residenceType"].toString()=="2"){
+    else if( widget.memberData["FlatData"][0]["residenceType"].toString()=="2"){
       ResidanceType = "Rent";
     }
     else{
@@ -858,7 +858,7 @@ class _MemberProfileState extends State<MemberProfile> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                            "${widget.memberData["FlatData"]["flatNo"]}",
+                            "${widget.memberData["FlatData"][0]["flatNo"]}",
                             style: TextStyle(
                               color: Colors.grey[800],
                               fontWeight: FontWeight.w600,

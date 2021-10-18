@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
@@ -8,7 +7,6 @@ import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:smartsocietystaff/Common/Constants.dart' as cnst;
-
 // import 'package:smart_society_new/Member_App/common/Services.dart';
 // import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
 // import '../common/constant.dart' as cnst;
@@ -626,10 +624,11 @@ class _SOSpageState extends State<SOSpage> {
                   searchable: true,
                   onConfirm: (List allFlats){
                     print(allFlats);
+                    print(flatNumbersAndIds);
                     flatIdsForBackend.clear();
                     for(int i=0;i<allFlats.length;i++){
                       for(int j=0;j<flatNumbersAndIds.length;j++){
-                        if((flatNumbersAndIds[j]["wingName"].toString()+flatNumbersAndIds[j]["flatNo"].toString()) ==
+                        if((flatNumbersAndIds[j]["wingName"].toString().replaceAll(" ", "")+flatNumbersAndIds[j]["flatNo"].toString().replaceAll(" ", "")) ==
                             allFlats[i].toString().replaceAll(" ", "").replaceAll("-", "")){
                           flatIdsForBackend.add(flatNumbersAndIds[j]["flatId"]);
                         }

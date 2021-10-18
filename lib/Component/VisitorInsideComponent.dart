@@ -27,18 +27,20 @@ class _VisitorInsideComponentState extends State<VisitorInsideComponent> {
 
   @override
   void initState() {
-
+    print(widget._visitorInsideList);
     // DateTime time = DateTime.parse(widget._visitorInsideList["inDateTime"][1]);
     // var finalDate = DateTime.now().difference(time).toString().split(":");
-    if(widget._visitorInsideList["inDateTime"].length!=0) {
+    if (widget._visitorInsideList["inDateTime"].length != 0) {
       setState(() {
-        minites =
-        widget._visitorInsideList["inDateTime"][1].toString().split(" ")[0]
+        minites = widget._visitorInsideList["inDateTime"][1]
+            .toString()
+            .split(" ")[0]
             .split(":")[1];
       });
-      int tempHour = int.parse(
-          widget._visitorInsideList["inDateTime"][1].toString().split(" ")[0]
-              .split(":")[0]);
+      int tempHour = int.parse(widget._visitorInsideList["inDateTime"][1]
+          .toString()
+          .split(" ")[0]
+          .split(":")[0]);
       if (tempHour >= 24) {
         do {
           day++;
@@ -49,8 +51,9 @@ class _VisitorInsideComponentState extends State<VisitorInsideComponent> {
         });
       } else {
         setState(() {
-          hour =
-          widget._visitorInsideList["inDateTime"][1].toString().split(" ")[0]
+          hour = widget._visitorInsideList["inDateTime"][1]
+              .toString()
+              .split(" ")[0]
               .split(":")[0];
         });
       }
@@ -66,16 +69,16 @@ class _VisitorInsideComponentState extends State<VisitorInsideComponent> {
 
   formatInTimeConversion() {
     if (widget._visitorInsideList["inDateTime"][1]
-        .toString()
-        .split(' ')[1]
-        .toString() !=
+            .toString()
+            .split(' ')[1]
+            .toString() !=
         "am") {
       hourInFormat = (int.parse(widget._visitorInsideList["inDateTime"][1]
-          .toString()
-          .split(' ')[0]
-          .split(':')[0]) +
-          12)
-          .toString() +
+                      .toString()
+                      .split(' ')[0]
+                      .split(':')[0]) +
+                  12)
+              .toString() +
           ":" +
           widget._visitorInsideList["inDateTime"][1]
               .toString()
@@ -89,9 +92,9 @@ class _VisitorInsideComponentState extends State<VisitorInsideComponent> {
               .split(':')[2]
               .toString();
       formattedInTime = widget._visitorInsideList["inDateTime"][0]
-          .toString()
-          .split('/')[2]
-          .toString() +
+              .toString()
+              .split('/')[2]
+              .toString() +
           "-" +
           widget._visitorInsideList["inDateTime"][0]
               .toString()
@@ -106,24 +109,24 @@ class _VisitorInsideComponentState extends State<VisitorInsideComponent> {
           hourInFormat;
     } else {
       hourInFormat = int.parse(widget._visitorInsideList["inDateTime"][1]
-          .toString()
-          .split(' ')[0]
-          .toString()
-          .split(":")[0]) >=
-          10
+                  .toString()
+                  .split(' ')[0]
+                  .toString()
+                  .split(":")[0]) >=
+              10
           ? widget._visitorInsideList["inDateTime"][1]
-          .toString()
-          .split(' ')[0]
-          .toString()
-          : "0" +
-          widget._visitorInsideList["inDateTime"][1]
               .toString()
               .split(' ')[0]
-              .toString();
+              .toString()
+          : "0" +
+              widget._visitorInsideList["inDateTime"][1]
+                  .toString()
+                  .split(' ')[0]
+                  .toString();
       formattedInTime = widget._visitorInsideList["inDateTime"][0]
-          .toString()
-          .split('/')[2]
-          .toString() +
+              .toString()
+              .split('/')[2]
+              .toString() +
           "-" +
           widget._visitorInsideList["inDateTime"][0]
               .toString()
@@ -139,16 +142,14 @@ class _VisitorInsideComponentState extends State<VisitorInsideComponent> {
     }
   }
 
-
   _CheckOutStatus(String visitorId) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         widget.onChange("loading");
-        var data = {
-          "entryId" : visitorId
-        };
-        Services.responseHandler(apiName:"watchman/updateOutTime",body: data).then((data) async {
+        var data = {"entryId": visitorId};
+        Services.responseHandler(apiName: "watchman/updateOutTime", body: data)
+            .then((data) async {
           if (data.Data == "1" && data.IsSuccess == true) {
             widget.onChange("false");
           } else {
@@ -190,11 +191,19 @@ class _VisitorInsideComponentState extends State<VisitorInsideComponent> {
 
   List<Widget> wingsAndFlats = [];
 
-  allWingsAndFlats(){
-    print("called");
+  allWingsAndFlats() {
     wingsAndFlats.clear();
-      for (int i = 0; i < widget._visitorInsideList["FlatData"].length; i++) {
-        if (i == widget._visitorInsideList["FlatData"].length - 1 && !wingsAndFlats.contains(Text(
+
+    for (int i = 0; i < widget._visitorInsideList["FlatData"].length; i++) {
+      wingsAndFlats.add(Text(
+        "${widget._visitorInsideList["WingData"][i]["wingName"]}-${widget._visitorInsideList["FlatData"][i]["flatNo"]}",
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: Colors.grey[600],
+        ),
+      ));
+      /*  if (i == widget._visitorInsideList["FlatData"].length - 1 && !wingsAndFlats.contains(Text(
           "${widget._visitorInsideList["WingData"][i]["wingName"]}-${widget
               ._visitorInsideList["FlatData"][i]["flatNo"]}",
           style: TextStyle(
@@ -231,15 +240,13 @@ class _VisitorInsideComponentState extends State<VisitorInsideComponent> {
               color: Colors.grey[600],
             ),
           ));
-        }
-      }
+        }*/
+    }
     return wingsAndFlats;
   }
 
   @override
   Widget build(BuildContext context) {
-    print(formattedInTime);
-    print(hourInFormat);
     return Card(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -265,7 +272,7 @@ class _VisitorInsideComponentState extends State<VisitorInsideComponent> {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(right : 2.0),
+              padding: const EdgeInsets.only(right: 2.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -273,40 +280,63 @@ class _VisitorInsideComponentState extends State<VisitorInsideComponent> {
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(
                       '${widget._visitorInsideList["Name"]}',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
-                    child: Text(widget._visitorInsideList["CompanyName"] != "" &&
-                            widget._visitorInsideList["CompanyName"] != null
-                        ? '${widget._visitorInsideList["CompanyName"]}'
-                        : '${widget._visitorInsideList["ContactNo"]}'),
+                    child: Text(
+                        widget._visitorInsideList["CompanyName"] != "" &&
+                                widget._visitorInsideList["CompanyName"] != null
+                            ? '${widget._visitorInsideList["CompanyName"]}'
+                            : '${widget._visitorInsideList["ContactNo"]}'),
                   ),
-                  widget._visitorInsideList["WingData"].length > 0 ? Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: wingsAndFlats,
-                      ),
-                    )
-                  ) : Container(),
-                  widget._visitorInsideList["status"] == "0" ? Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text("Not Approved",
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold
-                    ),
-                    ),
-                  ) : Container()
+                  widget._visitorInsideList["WingData"].length > 0
+                      ? Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: wingsAndFlats,
+                            ),
+                          ))
+                      : Container(),
+                  widget._visitorInsideList["status"].toString() == "0"
+                      ? Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            "Pending...",
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+                        )
+                      : widget._visitorInsideList["status"].toString() == "2"
+                          ? Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                "Not Approved",
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                "Approved",
+                                style: TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            )
                 ],
               ),
             ),
           ),
           Expanded(
-            child:Column(
+            child: Column(
               children: [
                 // widget._visitorInsideList["outDateTime"].length==0 ? Padding(
                 //   padding: const EdgeInsets.only(right:35.0),
@@ -323,59 +353,63 @@ class _VisitorInsideComponentState extends State<VisitorInsideComponent> {
                 //     ),
                 //   ),
                 // ),
-                widget._visitorInsideList["inDateTime"].length==0 ? Padding(
-                  padding: const EdgeInsets.only(right:35.0),
-                  child: Text("No inTime Found",
-                    style: TextStyle(
-                        color:appPrimaryMaterialColor
-                    ),
-                  ),
-                ):Padding(
-                  padding: const EdgeInsets.only(right:35.0),
-                  child: Text(widget._visitorInsideList["inDateTime"][0],
-                    style: TextStyle(
-                        color: appPrimaryMaterialColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                widget._visitorInsideList["inDateTime"].length==0 ? Padding(
-                  padding: const EdgeInsets.only(right:35.0),
-                  child: Text("No inTime Found",
-                    style: TextStyle(
-                        color: Colors.red
-                    ),
-                  ),
-                ):Padding(
-                  padding: const EdgeInsets.only(right:35.0),
-                  child: Text(widget._visitorInsideList["inDateTime"][1],
-                    style: TextStyle(
-                        color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                widget._visitorInsideList["inDateTime"].length==0 ? Padding(
-                  padding: const EdgeInsets.only(right:35.0),
-                  child: Text("No inTime Found",
-                    style: TextStyle(
-                        color: Colors.red
-                    ),
-                  ),
-                ):Padding(
-                  padding: const EdgeInsets.only(right:35.0),
-                  child: Text("${(DateTime.now().difference(DateTime.parse(formattedInTime))).toString().split('.')[0]}",
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+                widget._visitorInsideList["inDateTime"].length == 0
+                    ? Padding(
+                        padding: const EdgeInsets.only(right: 35.0),
+                        child: Text(
+                          "No inTime Found",
+                          style: TextStyle(color: appPrimaryMaterialColor),
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.only(right: 35.0),
+                        child: Text(
+                          widget._visitorInsideList["inDateTime"][0],
+                          style: TextStyle(
+                            color: appPrimaryMaterialColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                widget._visitorInsideList["inDateTime"].length == 0
+                    ? Padding(
+                        padding: const EdgeInsets.only(right: 35.0),
+                        child: Text(
+                          "No inTime Found",
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.only(right: 35.0),
+                        child: Text(
+                          widget._visitorInsideList["inDateTime"][1],
+                          style: TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                widget._visitorInsideList["inDateTime"].length == 0
+                    ? Padding(
+                        padding: const EdgeInsets.only(right: 35.0),
+                        child: Text(
+                          "No inTime Found",
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.only(right: 35.0),
+                        child: Text(
+                          "${(DateTime.now().difference(DateTime.parse(formattedInTime))).toString().split('.')[0]}",
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
               ],
             ),
-
           ),
-
           IconButton(
               icon: Icon(
                 Icons.call,
@@ -404,32 +438,56 @@ class _VisitorInsideComponentState extends State<VisitorInsideComponent> {
               //   child: widget._visitorInsideList["inDateTime"].length!=0 ?
               //       Text((DateTime.now())):Text("No InTime Found"),
               // ),
-              Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: FlatButton(
-                    shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(8.0),
-                        side: BorderSide(color: Colors.red, width: 2)),
-                    color: Colors.white,
-                    textColor: Colors.red,
-                    padding: EdgeInsets.all(8.0),
-                    onPressed: () {
-                      _CheckOutStatus(
-                          '${widget._visitorInsideList["_id"].toString()}');
-                    },
-                    child: Text(
-                      "OUT".toUpperCase(),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14.0,
+              widget._visitorInsideList["status"].toString() == "2"
+                  ? Padding(
+                      padding: const EdgeInsets.all(6.0),
+                      child: SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: FlatButton(
+                          shape: new RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(8.0),
+                              side: BorderSide(color: Colors.red, width: 2)),
+                          color: Colors.white,
+                          textColor: Colors.white,
+                          padding: EdgeInsets.all(8.0),
+                          onPressed: () {
+
+                          },
+                          child: Image.asset(
+                            'images/disable.png',
+                            width: 50,
+                            height: 50,
+                          )
+                        ),
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(6.0),
+                      child: SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: FlatButton(
+                          shape: new RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(8.0),
+                              side: BorderSide(color: Colors.red, width: 2)),
+                          color: Colors.white,
+                          textColor: Colors.red,
+                          padding: EdgeInsets.all(8.0),
+                          onPressed: () {
+                            _CheckOutStatus(
+                                '${widget._visitorInsideList["_id"].toString()}');
+                          },
+                          child: Text(
+                            "OUT".toUpperCase(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14.0,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              ),
             ],
           )
         ],

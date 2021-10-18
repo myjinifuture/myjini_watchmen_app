@@ -43,6 +43,7 @@ dependencies:
   flutter_text_to_speech: any
   cloud_firestore: any
   device_info: any
+  device_apps: ^1.3.0
   textfield_search: ^0.8.0
   flutter_native_image: ^0.0.4
   xml2json: ^4.0.0
@@ -58,7 +59,7 @@ dependencies:
   #  firebase_auth: any
   imei_plugin: ^1.2.0
   firebase_core: ^0.5.0
-  unique_identifier: any
+  unique_identifier: 0.0.1
   onesignal_flutter: ^2.6.3
   pin_input_text_field: ^3.0.2
   flutter_multiple_image_picker: ^0.0.1
@@ -67,14 +68,14 @@ dependencies:
   month_picker_dialog: ^0.3.0
   # month_picker_dialog: ^0.3.3
   fl_chart: ^0.4.1
-  flutter_staggered_animations: ^1.0.0
+  flutter_staggered_animations: any
   speech_recognition: any
   permission_handler: any
   firebase_messaging: ^6.0.9
   multiselect_formfield: ^0.1.2
   intl: any
   easy_permission_validator: any
-  easy_localization: ^1.3.2
+  easy_localization: any
   multi_image_picker: ^4.7.14
   flutter_local_notifications: ^1.1.6
   multi_select_flutter: any
@@ -85,6 +86,7 @@ dependencies:
   # agora_rtc_engine: ^3.1.3constant.NODE_API
   agora_rtc_engine: ^1.0.13
   agora_rtm: any
+  audioplayers: ^0.12.0
   # wakelock: ^0.2.1
 
 
@@ -165,6 +167,8 @@ flutter:
     - images/video_call.png
     - images/success.png
     - images/SOSwatchman.png
+    - images/disable.png
+    - assets/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

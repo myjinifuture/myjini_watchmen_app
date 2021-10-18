@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
@@ -9,14 +8,12 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 // import 'package:device_info/device_info.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smartsocietystaff/Common/Constants.dart' as constant;
 import 'package:mobile_number/mobile_number.dart';
 import 'package:smartsocietystaff/Common/Constants.dart';
 import 'package:smartsocietystaff/Common/Services.dart';
 import 'package:unique_identifier/unique_identifier.dart';
-
 import 'WatchmanDashboard.dart';
 
 class PermissionsService {
@@ -44,27 +41,30 @@ class _SplashState extends State<Splash> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String MemberId = prefs.getString(constant.Session.MemberId);
       String Role = prefs.getString(constant.Session.Role);
-      // constant.NODE_API = "http://3.7.94.50/";
-      // constant.IMG_URL = "http://3.7.94.50/";
-      //   if (MemberId != null && MemberId != "") {
-      //     Navigator.pushReplacementNamed(context, '/WatchmanDashboard');
-      //   }
-      //   else {
-      //     PermissionHandler().requestPermissions(
-      //       [
-      //         PermissionGroup.camera,PermissionGroup.microphone,PermissionGroup.phone,PermissionGroup.location
-      //       ],
-      //     );
-      //     initMobileNumberState();
-      //     // Navigator.pushReplacementNamed(context, '/Login');
-      //   }
+       constant.NODE_API = "http://13.127.1.141/";
+       //constant.NODE_API = "https://myjini2.herokuapp.com/";
+     // constant.IMG_URL="https://myjini2.herokuapp.com/";
+       constant.IMG_URL = "http://13.127.1.141/";
+
+         if (MemberId != null && MemberId != "") {
+           Navigator.pushReplacementNamed(context, '/WatchmanDashboard');
+         }
+         else {
+           PermissionHandler().requestPermissions(
+             [
+              PermissionGroup.camera,PermissionGroup.microphone,PermissionGroup.phone,PermissionGroup.location
+            ],
+          );
+           //initMobileNumberState();
+            Navigator.pushReplacementNamed(context, '/Login');
+         }
       FirebaseFirestore.instance.collection("DYNAMIC-URL-MYJINI-MEMBER-APP")
           .get()
           .then((value) async {
-        //constant.NODE_API_2 = "https://myjini2.herokuapp.com/";
+           //constant.NODE_API_2 = "https://myjini2.herokuapp.com/";
 
-        constant.NODE_API = "${value.docs[0]["DYNAMIC-URL-MYJINI-MEMBER-APP"]}";
-        constant.IMG_URL = "${value.docs[0]["DYNAMIC-URL-MYJINI-MEMBER-APP"]}";
+       // constant.NODE_API = "${value.docs[0]["DYNAMIC-URL-MYJINI-MEMBER-APP"]}";
+       // constant.IMG_URL = "${value.docs[0]["DYNAMIC-URL-MYJINI-MEMBER-APP"]}";
         print("constant.NODE_API");
         print(constant.NODE_API);
         if (MemberId != null && MemberId != "")
@@ -123,6 +123,8 @@ class _SplashState extends State<Splash> {
   //   // return false;
   // }
 
+  String mobileNumber = '';
+
   Future<void> initMobileNumberState() async {
     // SharedPreferences prefs = await SharedPreferences.getInstance();
     // print("prefs.getString(constant.Session.called)");
@@ -130,30 +132,36 @@ class _SplashState extends State<Splash> {
     // print(prefs.getString(constant.Session.called).runtimeType);
     // if(prefs.getString(constant.Session.called) == 'true') {
     //   prefs.setString(constant.Session.called, 'null');
-      String mobileNumber = '';
       try {
         // if (!await MobileNumber.hasPhonePermission) {
         //   await MobileNumber.requestPhonePermission;
         //   return;// for android 11
         // }
         mobileNumber = (await MobileNumber.mobileNumber);
-        _simCard = (await MobileNumber.getSimCards);
-        print("_simCard");
-        print(_simCard);
-        _simCard.forEach((e) {
-          print("e.number");
-          print(e.toMap());
-          var mobileNo;
-          if (!e.number.contains("+") && e.number.length == 12) {
-            getMobileNumbers("+" + "${e.number}");
-          }
-          else if (!e.number.contains("+") && e.number.length == 10) {
-            getMobileNumbers("+91" + "${e.number}");
-          }
-          else {
-            getMobileNumbers("${e.number}");
-          }
-        });
+        print("mobileNumber");
+        print(mobileNumber);
+        if(mobileNumber==""){
+          Navigator.pushReplacementNamed(context, '/Login');
+        }
+        else{
+          _simCard = (await MobileNumber.getSimCards);
+          print("_simCard");
+          print(_simCard);
+          _simCard.forEach((e) {
+            print("e.number");
+            print(e.toMap());
+            var mobileNo;
+            if (!e.number.contains("+") && e.number.length == 12) {
+              getMobileNumbers("+" + "${e.number}");
+            }
+            else if (!e.number.contains("+") && e.number.length == 10) {
+              getMobileNumbers("+91" + "${e.number}");
+            }
+            else {
+              getMobileNumbers("${e.number}");
+            }
+          });
+        }
       } on PlatformException catch (e) {
         debugPrint("Failed to get mobile number because of '${e.message}'");
       }
@@ -292,8 +300,11 @@ class _SplashState extends State<Splash> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var body = {};
+        print(constant.NODE_API);
         Services.responseHandler(apiName: "watchman/getAllWatchmanMobileNo",body: body).then((data) async {
           if (data.Data.length > 0) {
+            print("mobileNo.toString()");
+            print(mobileNo.toString());
             for(int i=0;i<data.Data.length;i++){
               if(mobileNo.toString() == data.Data[i]["ContactNo1"].toString()){
                 var androidInfo = await DeviceInfoPlugin().androidInfo;
@@ -314,10 +325,6 @@ class _SplashState extends State<Splash> {
                 break;
               }
             }
-            // if(!mobileNoFound){
-            //   Fluttertoast.showToast(
-            //       msg: "Your Mobile Number ${mobileNo} is not Registered", toastLength: Toast.LENGTH_LONG);
-            // }
           }
         }, onError: (e) {
           Fluttertoast.showToast(
@@ -335,6 +342,7 @@ class _SplashState extends State<Splash> {
 
   @override
   Widget build(BuildContext context) {
+    print(mobileNumber.runtimeType);
     return Scaffold(
       body: Stack(
         children: <Widget>[

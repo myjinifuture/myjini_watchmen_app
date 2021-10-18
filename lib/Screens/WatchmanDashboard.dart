@@ -66,13 +66,15 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
   String fcmToken = "";
   TextEditingController txtvehicle = new TextEditingController();
 
-  Future<void> initOneSignalNotification() async {
+/*  Future<void> initOneSignalNotification() async {
+    print("hello");
     OneSignal.shared.setNotificationOpenedHandler(
         (OSNotificationOpenedResult result) async {
       print("Opened notification");
       print(result.notification.jsonRepresentation().replaceAll("\\n", "\n"));
       print(result.notification.payload.additionalData);
       dynamic data = result.notification.payload.additionalData;
+
       Vibration.vibrate(
         duration: 700,
       );
@@ -92,7 +94,7 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
       } else if (data["NotificationType"] == 'VisitorRejected') {
         Get.to(
             NotificationAnswerDialog(data, VisitorAccepted: "VisitorRejected"));
-      } else if (data["NotificationType"] == 'VoiceCall') {
+      } *//*else if (data["NotificationType"] == 'VoiceCall') {
         Get.to(
             JoinPage(
             entryIdWhileGuestEntry: data["CallingId"],
@@ -100,12 +102,12 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
                 data["NotificationType"],
             ),
         ); // audioCache.play('Sound.mp3');
-      } else if (data["NotificationType"] == 'VideoCalling') {
+      } *//*else if (data["NotificationType"] == 'VideoCalling') {
         Get.to(JoinPage(
             entryIdWhileGuestEntry: data["VisitorEntryId"],
             data: data,
             CallingId: data["CallingId"]));
-      } else if (data["notificationType"] == 'UnknownVisitor') {
+      } else if (data["NotificationType"] == 'UnknownVisitor') {
         if (data["CallStatus"] == "Accepted") {
           Get.to(
             JoinPage(
@@ -130,7 +132,7 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
         Get.to(NotificationAnswerDialog(data));
       }
     });
-  }
+  }*/
 
   var playerId;
 
@@ -394,6 +396,7 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
   @override
   void initState() {
     _getLocaldata();
+    initPlatformState();
     try {
       versionCheck(context);
     } catch (e) {
@@ -1101,7 +1104,7 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
             title: new Text(title),
             content: Column(
               children: [
-                 image == "" ? Image.asset(
+                 image == null ? Image.asset(
                    "images/no_image.png",
                    height: MediaQuery.of(context).size.height / 3,
                    width: MediaQuery.of(context).size.width - 20,
@@ -1229,7 +1232,7 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
     mobileNo = prefs.getString(constant.Session.mobileNo);
     _speech = stt.SpeechToText();
     controller.init();
-    initOneSignalNotification();
+    //initOneSignalNotification();
     // getWingsId(societyId);
     // _getDirectoryListing(societyId);
     // _getInsideVisitor(societyId);
@@ -1242,8 +1245,9 @@ class _WatchmanDashboardState extends State<WatchmanDashboard> {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         print("called");
         // pr.show();
+        var divya=entryNo.split("-");
         var data = {
-          "entryNo":entryNo.toString(),
+          "entryNo":divya.last.toString(),
           "societyId":societyId
         };
         print("data");
